@@ -1,0 +1,84 @@
+<html>
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=Edge;chrome=1" > 
+      <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico">
+      <link type="text/css" rel="stylesheet" href="css/jquery.contextMenu.css">
+      <link rel="stylesheet" href="css/dhtmlwindow.css" type="text/css">
+      <link type="text/css" rel="stylesheet" href="js9.css">
+      <script type="text/javascript" src="js/jquery.min.js"></script>
+      <script type="text/javascript" src="js/kinetic.min.js"></script>
+      <script type="text/javascript" src="js/jquery.contextMenu.min.js"></script>
+      <script type="text/javascript" src="js/jquery.flot.min.js"></script>
+      <script type="text/javascript" src="js/jquery.flot.errorbars.min.js"></script>
+      <script type="text/javascript" src="js/sprintf.min.js"></script>
+      <script type="text/javascript" src="js/dhtmlwindow.min.js">
+      /***********************************************
+      * DHTML Window Widget- © Dynamic Drive (www.dynamicdrive.com)
+      * This notice must stay intact for legal use.
+      * Visit http://www.dynamicdrive.com/ for full source code
+      ***********************************************/
+      </script>
+      <script type="text/javascript" src="js/fitsy.js"></script>
+      <script type="text/javascript" src="js9.js"></script>
+
+        <script>
+
+	
+
+	simbad=encodeURI('http://hopper.si.edu/http/simbad?m31')
+
+	var xhr = new XMLHttpRequest();
+
+	xhr.open('GET', simbad, true);
+
+	xhr.onload = function(e) {
+	    console.log(e)
+  	}
+	xhr.send();
+
+	HTTP="www.cfa.harvard.edu"
+
+	fucnction ImageGo() {
+	    form = $("#archive-box")
+
+	}
+
+	function getimage() {
+		var e="J2000"
+		var h=15
+		var w=15
+		var d=15
+		var r=12
+		var d=12
+
+	    url = "http://" + HTTP + "/archive/dss?e=" + e + "&h=" + h + "&w=" + w + "&r=" + r + "&d=" + d
+
+	    Fitsy.fetchURL(url);
+	}
+
+        </script>
+    </head>
+    <body>
+    <div class="JS9Menubar"></div>
+    <div class="JS9"></div>
+
+        <br>
+	<form>
+
+
+	Image archive : SAO DSS <p>
+
+	<table>
+	<tr><td> Object: </td>
+	    <td> <input type=text size=10> </td>
+	</td></tr>
+	<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>
+	    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>
+	    <td> <input type=button value=Go onclick='getimage()'> </td>
+	</tr>
+
+
+	</form>
+    </body>
+</html>

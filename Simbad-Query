@@ -1,0 +1,7 @@
+
+wget -O- -q http://simbad.u-strasbg.fr/simbad/sim-script?script="
+output console=off script=off
+set limit 1
+format object form1 \"%COO(:;A;FK5;2000;2000) %COO(:;D;FK5;2000;2000)\"
+query id m31
+"
