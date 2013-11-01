@@ -35,6 +35,8 @@
 	    xhr.open('GET', url, true);
 	    xhr.onload = func
 	    xhr.send();
+
+	    return xhr;
 	}
 
 	function ImageGo() {
@@ -44,29 +46,39 @@
 		return;
 	    }
 
-	    if ( form.object.value !== "" ) {
-		simbad=encodeURI('http://hopper.si.edu/http/simbad?m31')
+	    w = parseFloat(form.width.value)
+	    h = parseFloat(form.height.value)
 
-		xhr(simbad, function(e) {
-		    console.log(e.responceText);	
+	    if ( w > 60 ) {
+		form.width.value = "60";
+		w = 60;
+	    }
+	    if ( h > 60 ) {
+		form.height.value = "60";
+		h = 60;
+	    }
+
+	    if ( form.object.value !== "" ) {
+		simbad=encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value)
+
+		var reply = xhr(simbad, function(e) {
+		    console.log(reply.responseText);	
+
+		    var coords = reply.responseText.split(" ");
+
+		    form.ra.value = coords[0]
+		    form.dec.value = coords[1]
+
+		    getimage("J2000", h.toString(), w.toString(), form.ra.value, form.dec.value);
 		})
 
 		return
 	    }
 
-	    if ( form.width.value )
-
-	    getimage(e, h, w, r, d);
+	    getimage("J2000", h.toString(), w.toString(), form.ra.value, form.dec.value);
 	}
 
 	function getimage(e, h, w, r, d) {
-		var e="J2000"
-		var h=15
-		var w=15
-		var d=15
-		var r=12
-		var d=12
-
 	    url = "http://" + HTTP + "/archive/dss?e=" + e + "&h=" + h + "&w=" + w + "&r=" + r + "&d=" + d
 
 	    Fitsy.fetchURL(url);
