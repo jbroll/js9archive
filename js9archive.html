@@ -26,25 +26,40 @@
 
 	
 
-	simbad=encodeURI('http://hopper.si.edu/http/simbad?m31')
-
-	var xhr = new XMLHttpRequest();
-
-	xhr.open('GET', simbad, true);
-
-	xhr.onload = function(e) {
-	    console.log(e)
-  	}
-	xhr.send();
 
 	HTTP="www.cfa.harvard.edu"
 
-	fucnction ImageGo() {
-	    form = $("#archive-box")
+ 	function xhr(url, func) {
+	    var xhr = new XMLHttpRequest();
 
+	    xhr.open('GET', url, true);
+	    xhr.onload = func
+	    xhr.send();
 	}
 
-	function getimage() {
+	function ImageGo() {
+	    var form = $("#archive-box")[0]
+
+	    if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
+		return;
+	    }
+
+	    if ( form.object.value !== "" ) {
+		simbad=encodeURI('http://hopper.si.edu/http/simbad?m31')
+
+		xhr(simbad, function(e) {
+		    console.log(e.responceText);	
+		})
+
+		return
+	    }
+
+	    if ( form.width.value )
+
+	    getimage(e, h, w, r, d);
+	}
+
+	function getimage(e, h, w, r, d) {
 		var e="J2000"
 		var h=15
 		var w=15
@@ -64,18 +79,22 @@
     <div class="JS9"></div>
 
         <br>
-	<form>
+	<form id="archive-box">
 
 
 	Image archive : SAO DSS <p>
 
 	<table>
-	<tr><td> Object: </td>
-	    <td> <input type=text size=10> </td>
-	</td></tr>
+	<tr><td> Object: </td> <td> <input type=text name=object size=10> </td>
+	    <td></td>
+	    <td></td>
+	    <td> <input type=button value=Go onclick='ImageGo()'> </td>
+	</tr>
 	<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>
 	    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>
-	    <td> <input type=button value=Go onclick='getimage()'> </td>
+	<tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>
+	    <td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>
+	</tr>
 	</tr>
 
 
