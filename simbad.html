@@ -1,0 +1,31 @@
+
+<html>
+<head>
+<script>
+
+simbad=encodeURI('http://simbad.u-strasbg.fr/simbad/sim-script?script=\n\
+output console=off script=off\n\
+set limit 1\n\
+format object form1 "%COO(:;A;FK5;2000;2000) %COO(:;D;FK5;2000;2000)"\n\
+query id m31\n\
+')
+
+ 	function xhr(url, func) {
+	    var xhr = new XMLHttpRequest();
+
+	    xhr.open('GET', url, true);
+	    xhr.onload = func
+	    xhr.send();
+	}
+
+	xhr(simbad, function(e) {
+	    console.log(e)
+	})
+
+
+</script>
+</head>
+<body>
+Hi
+</body>
+</html>

@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+
+http=$2
+
+if [ "$http" = "" ] ; then
+    http=simbad.u-strasbg.fr
+fi
+
+
+if [ "$HTTP_HOST" != "" ] ; then
+    echo "Access-Control-Allow-Origin: *"
+    echo "Content-Type: text/plain"
+    echo ""
+fi
+
+wget -O- -q http://$http/simbad/sim-script?script="
+output console=off script=off
+set limit 1
+format object form1 \"%COO(:;A;FK5;2000;2000) %COO(:;D;FK5;2000;2000)\"
+query id $1
+"

@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+./simbad $1 simbad.harvard.edu
+

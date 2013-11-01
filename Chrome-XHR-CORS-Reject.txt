@@ -1,0 +1,1 @@
+XMLHttpRequest cannot load http://simbad.u-strasbg.fr/simbad/sim-script?script=%0Aoutput%20console=off…OO(:;A;FK5;2000;2000)%20%25COO(:;D;FK5;2000;2000)%22%0Aquery%20id%20m31%0A. Origin http://hopper.si.edu is not allowed by Access-Control-Allow-Origin. simbad.html:1
