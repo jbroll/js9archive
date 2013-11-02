@@ -24,7 +24,9 @@
 
         <script>
 
-	
+	function status(message) {
+	    $("#status").text(message)
+	}
 
 
 	HTTP="www.cfa.harvard.edu"
@@ -34,7 +36,6 @@
 
 	    xhr.open('GET', url, true);
 	    xhr.onload = func
-	    xhr.send();
 
 	    return xhr;
 	}
@@ -62,26 +63,41 @@
 		simbad=encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value)
 
 		var reply = xhr(simbad, function(e) {
-		    console.log(reply.responseText);	
-
 		    var coords = reply.responseText.split(" ");
 
-		    form.ra.value = coords[0]
+		    form.ra.value  = coords[0]
 		    form.dec.value = coords[1]
 
-		    getimage("J2000", h.toString(), w.toString(), form.ra.value, form.dec.value);
+		    status("");
+		    getimage(form.object.value, "J2000", h.toString(), w.toString()
+				, form.ra.value, form.dec.value
+				, form.gzip.value, $("#status"));
 		})
+		reply.addEventListener("progress", function(e) { status("progress " + e.loaded.toString()) });
+		reply.addEventListener("error"	 , function(e) { status("Name service error"); });
+		reply.addEventListener("abort"	 , function(e) { status("Name service aborted"); });
+	        reply.send();
 
 		return
 	    }
 
-	    getimage("J2000", h.toString(), w.toString(), form.ra.value, form.dec.value);
+	    getimage(form.object.value, "J2000", h.toString(), w.toString()
+		    	, form.ra.value, form.dec.value
+		    	, form.gzip.value, $("#status"));
 	}
 
-	function getimage(e, h, w, r, d) {
-	    url = "http://" + HTTP + "/archive/dss?e=" + e + "&h=" + h + "&w=" + w + "&r=" + r + "&d=" + d
+	function getimage(name, e, h, w, r, d, c, messages) {
+	    var gzip;
 
-	    Fitsy.fetchURL(url);
+	    if ( c === "on" ) {
+		gzip = "c=gzip&"
+	    } else {
+		gzip = ""
+	    }
+
+	    url = "http://" + HTTP + "/archive/dss?" + gzip + "&e=" + e + "&h=" + h + "&w=" + w + "&r=" + r + "&d=" + d
+
+	    Fitsy.fetchURL(name, url, messages);
 	}
 
         </script>
@@ -101,6 +117,8 @@
 	    <td></td>
 	    <td></td>
 	    <td> <input type=button value=Go onclick='ImageGo()'> </td>
+	    <td>&nbsp;&nbsp;</td>
+	    <td> <input type=checkbox name=gzip> Use Compression</td>
 	</tr>
 	<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>
 	    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>
@@ -108,7 +126,7 @@
 	    <td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>
 	</tr>
 	</tr>
-
+	<tr><td colspan=6><span id=status></span></td></tr>
 
 	</form>
     </body>
