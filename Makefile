@@ -9,5 +9,6 @@ $(JS9)/js9archive.html: js9archive.html
 	cp -p js9archive.html $(JS9)/js9archive.html
 
 $(JS9JS)/subst.js : subst.js
+	mkdir $(JS9JS)
 	cp -p subst.js $(JS9JS)/subst.js
 
