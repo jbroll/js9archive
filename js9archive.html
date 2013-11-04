@@ -19,6 +19,8 @@
       * Visit http://www.dynamicdrive.com/ for full source code
       ***********************************************/
       </script>
+      <script type="text/javascript" src="js/archive/subst.js"></script>
+
       <script type="text/javascript" src="js/fitsy.js"></script>
       <script type="text/javascript" src="js/astrolib.js"></script>
       <script type="text/javascript" src="js9.js"></script>
@@ -30,8 +32,6 @@
 	}
 
 
-	HTTP="www.cfa.harvard.edu"
-
  	function xhr(url, func) {
 	    var xhr = new XMLHttpRequest();
 
@@ -40,6 +40,7 @@
 
 	    return xhr;
 	}
+
 
 	function ImageGo() {
 	    var form = $("#archive-box")[0]
@@ -60,6 +61,11 @@
 		h = 60;
 	    }
 
+	    var survey = form.survey.options[form.survey.selectedIndex].value.split(":")
+	    var server = Surveys[survey[0]]
+	    
+	    survey = survey[1]
+	    
 	    if ( form.object.value !== "" ) {
 		simbad=encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value)
 
@@ -70,9 +76,14 @@
 		    form.dec.value = coords[1]
 
 		    status("");
-		    getimage(form.object.value, "J2000", h.toString(), w.toString()
-				, form.ra.value, form.dec.value
-				, form.gzip.value, $("#status"));
+		    server.getimage({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
+				    , r: form.ra.value, d: form.dec.value
+				    , c: form.gzip.checked
+				    , s: survey
+
+				    , proxy: form.proxy.checked
+				  }
+				, $("#status"));
 		})
 		reply.addEventListener("progress", function(e) { status("progress " + e.loaded.toString()) });
 		reply.addEventListener("error"	 , function(e) { status("Name service error"); });
@@ -82,24 +93,85 @@
 		return
 	    }
 
-	    getimage(form.object.value, "J2000", h.toString(), w.toString()
-		    	, form.ra.value, form.dec.value
-		    	, form.gzip.value, $("#status"));
+	    server.getimage({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
+			    , r: form.ra.value, d: form.dec.value
+			    , c: form.gzip.checked
+			    , s: survey
+
+			    , proxy: form.proxy.checked
+			  }
+			, $("#status"));
 	}
 
-	function getimage(name, e, h, w, r, d, c, messages) {
-	    var gzip;
+	function ImageService(params) {
+	    this.params = params;
 
-	    if ( c === "on" ) {
-		gzip = "c=gzip&"
-	    } else {
-		gzip = ""
+	    this.getimage = function (values, messages) {
+
+		this.params.calc(values)
+
+		var url = subst(this.params.url, values)
+		
+		if ( values.proxy ) {
+		    url = url.replace(/\?/g, "@")
+		    url = url.replace(/&/g, "!")
+		    url = url.replace(/\+/g, "")
+
+		    url = encodeURI(url)
+
+		    url="http://hopper.si.edu/http/CORS-proxy?Q=" + url
+		}
+		Fitsy.fetchURL(values.name, url, messages);
 	    }
-
-	    url = "http://" + HTTP + "/archive/dss?" + gzip + "&e=" + e + "&h=" + h + "&w=" + w + "&r=" + r + "&d=" + d
-
-	    Fitsy.fetchURL(name, url, messages);
 	}
+
+	saoDSS = new ImageService({
+	      url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
+	    , calc: function(values) {
+		    if ( values.c ) {
+			values.c = "gzip"
+		    }
+		    values.name = values.name + "-DSS1";
+		}
+	})
+
+	stsDSS = new ImageService({
+	      url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
+	    , calc: function(values) {
+		    if ( values.c ) {
+			values.c = "gz"
+		    } else {
+			values.c = "none"
+		    }
+		    values.name = values.name + values.s;
+		}
+	})
+
+	esoDSS = new ImageService({
+	      url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
+	    , calc: function(values) {
+		    if ( values.c ) {
+			values.c = "display/gz-fits"
+		    } else {
+			values.c = "application/x-fits"
+		    }
+		    values.name = values.name + " " + values.s;
+		}
+	})
+
+	ipac2m  = new ImageService({
+	      url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
+	    , calc: function(values) {
+		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60)
+		    values.name = values.name + " " + values.s;
+		}
+	})
+
+	Surveys = {   saoDSS: saoDSS
+		    , stsDSS: stsDSS
+		    , esoDSS: esoDSS
+		    , ipac2m : ipac2m
+		}
 
         </script>
     </head>
@@ -111,7 +183,28 @@
 	<form id="archive-box">
 
 
-	Image archive : SAO DSS <p>
+	Image archive : <select name=survey>
+			<option value=saoDSS>SAO DSS1</option>
+			<optgroup label="StSci DSS">
+			    <option value=stsDSS:poss2ukstu_ir>StSci DSS2 Infrared</option>
+			    <option value=stsDSS:poss2ukstu_red>StSci DSS2 Red</option>
+			    <option value=stsDSS:poss2ukstu_blue>StSci DSS2 Blue</option>
+			    <option value=stsDSS:poss1_red>StSci DSS1 Red</option>
+			    <option value=stsDSS:poss1_blue>StSci DSS1 Blue</option>
+			</optgroup>
+			<optgroup label="ESO DSS">
+			    <option value=esoDSS:DSS2-infrared>ESO DSS2 Infrared</option>
+			    <option value=esoDSS:DSS2-red>ESO DSS2 Red</option>
+			    <option value=esoDSS:DSS2-blue>ESO DSS2 Blue</option>
+			    <option value=esoDSS:DSS1>ESO DSS1</option>
+			</optgroup>
+			<optgroup label="IPAC 2mass">
+			    <option value=ipac2m:j>2Mass J</option>
+			    <option value=ipac2m:h>2Mass H</option>
+			    <option value=ipac2m:k>2Mass K</option>
+			</optgroup>
+			</select>
+			<p>
 
 	<table>
 	<tr><td> Object: </td> <td> <input type=text name=object size=10> </td>
@@ -123,6 +216,9 @@
 	</tr>
 	<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>
 	    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>
+	    <td></td>
+	    <td></td>
+	    <td> <input type=checkbox name=proxy checked> Use CORS Proxy</td>
 	<tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>
 	    <td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>
 	</tr>
