@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+
+if [ "$QUERY_STRING" = "" ] ; then
+    QUERY_STRING="$1"
+fi
+
+url=`echo "$QUERY_STRING" | awk '{
+	sub("Q=", "");
+	gsub("!", "\\\\&");
+	gsub("@", "?");
+	print $1
+}'`
+
+echo $url >> log
+
+wget -O- -q --save-headers $url | (
+ while read LINE; do
+    case "$LINE" in
+	""|"")
+	    echo "Access-Control-Allow-Origin: *"
+	    echo
+	    cat
+	    exit
+	    ;;
+	[Cc]ontent-[Ee]ncoding*)
+	    case $LINE in
+		*gzip*)
+		    echo "Content-Encoding: gzip"
+		    Encoding=1
+		    ;;
+	    esac
+	    ;;
+	[Cc]ontent-[Tt]ype*)
+	    case $LINE in
+		*gfits*)
+		    if [ "$Encoding" = "" ] ; then 
+			echo "Content-Encoding: gzip"
+		    fi
+		    ;;
+	    esac
+	    echo $LINE
+	    ;;
+    esac
+ done
+)
