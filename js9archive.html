@@ -167,10 +167,19 @@
 		}
 	})
 
+	skyvew  = new ImageService({
+	      url: "http://skys.gsfc.nasa.gov/cgi-bin/images?VCOORD={ra},{dec}&SURVEY={s}&SFACTR={size}&RETURN=FITS"
+	    , calc: function(values) {
+		    values.size = Math.floor((values.w+values.h)/2)
+		    values.name = values.name + " " + values.s;
+		}
+	})
+
 	Surveys = {   saoDSS: saoDSS
 		    , stsDSS: stsDSS
 		    , esoDSS: esoDSS
-		    , ipac2m : ipac2m
+		    , ipac2m: ipac2m
+		    , skyvew: skyvew
 		}
 
         </script>
@@ -199,9 +208,19 @@
 			    <option value=esoDSS:DSS1>ESO DSS1</option>
 			</optgroup>
 			<optgroup label="IPAC 2mass">
-			    <option value=ipac2m:j>2Mass J</option>
-			    <option value=ipac2m:h>2Mass H</option>
-			    <option value=ipac2m:k>2Mass K</option>
+			    <option value=ipac2m:j>IPAC 2Mass J</option>
+			    <option value=ipac2m:h>IPAC 2Mass H</option>
+			    <option value=ipac2m:k>IPAC 2Mass K</option>
+			</optgroup>
+
+<!--
+			<optgroup label="HEASARC SkyView">
+			    <option value=skyvew:sdssi>SkyView SDSS i</option>
+			    <option value=skyvew:sdssr>SkyView SDSS r</option>
+			    <option value=skyvew:sdssg>SkyView SDSS g</option>
+			    <option value=skyvew:sdssu>SkyView SDSS u</option>
+			    <option value=skyvew:sdssz>SkyView SDSS z</option>
+--!>
 			</optgroup>
 			</select>
 			<p>
