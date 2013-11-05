@@ -14,6 +14,15 @@ url=`echo "$QUERY_STRING" | awk '{
 
 echo $url >> log
 
+case "$url" in
+    http://www.cfa.harvard.edu/archive/dss*)				;;
+    http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg*)	;;
+    http://stdatu.stsci.edu/cgi-bin/dss_search*)			;;
+    http://archive.eso.org/dss/dss*)					;;
+
+    *)	exit 1 ;;
+esac
+
 wget -O- -q --save-headers $url | (
  while read LINE; do
     case "$LINE" in
