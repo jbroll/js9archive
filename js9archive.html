@@ -130,7 +130,6 @@
 	saoDSS = new ImageService({
 	      url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
 	    , calc: function(values) {
-		    values.c = false
 		    if ( values.c ) {
 			values.c = "gzip"
 		    }
