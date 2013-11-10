@@ -42,7 +42,7 @@
 	}
 
 
-	function ImageGo() {
+	function ServiceGo() {
 	    var form = $("#archive-box")[0]
 
 	    if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
@@ -61,11 +61,11 @@
 		h = 60;
 	    }
 
-	    var survey = form.survey.options[form.survey.selectedIndex].value.split(":")
-	    var source = form.survey.options[form.survey.selectedIndex].innerHTML
-	    var server = Surveys[survey[0]]
+	    var service = form.service.options[form.service.selectedIndex].value.split(":")
+	    var source  = form.service.options[form.service.selectedIndex].innerHTML
+	    var server  = Services[service[0]]
 	    
-	    survey = survey[1]
+	    service = service[1]
 	    
 	    if ( form.object.value !== "" ) {
 		simbad=encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value)
@@ -77,10 +77,10 @@
 		    form.dec.value = coords[1]
 
 		    status("");
-		    server.getimage({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
+		    server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 				    , r: form.ra.value, d: form.dec.value
 				    , c: form.gzip.checked
-				    , s: survey
+				    , s: service
 				    , source : source
 
 				    , proxy: form.proxy.checked
@@ -95,20 +95,20 @@
 		return
 	    }
 
-	    server.getimage({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
+	    server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 			    , r: form.ra.value, d: form.dec.value
 			    , c: form.gzip.checked
-			    , s: survey
+			    , s: service
 
 			    , proxy: form.proxy.checked
 			  }
 			, $("#status"));
 	}
 
-	function ImageService(params) {
+	function RemoteService(params) {
 	    this.params = params;
 
-	    this.getimage = function (values, messages) {
+	    this.retrieve = function (values, messages) {
 
 		this.params.calc(values)
 
@@ -127,7 +127,7 @@
 	    }
 	}
 
-	saoDSS = new ImageService({
+	saoDSS = new RemoteService({
 	      url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
 	    , calc: function(values) {
 		    if ( values.c ) {
@@ -137,7 +137,7 @@
 		}
 	})
 
-	stsDSS = new ImageService({
+	stsDSS = new RemoteService({
 	      url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
 	    , calc: function(values) {
 		    if ( values.c ) {
@@ -149,7 +149,7 @@
 		}
 	})
 
-	esoDSS = new ImageService({
+	esoDSS = new RemoteService({
 	      url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
 	    , calc: function(values) {
 		    if ( values.c ) {
@@ -161,7 +161,7 @@
 		}
 	})
 
-	ipac2m  = new ImageService({
+	ipac2m  = new RemoteService({
 	      url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
 		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60)
@@ -169,7 +169,7 @@
 		}
 	})
 
-	skyvew  = new ImageService({
+	skyvew  = new RemoteService({
 	      url: "http://skys.gsfc.nasa.gov/cgi-bin/images?VCOORD={ra},{dec}&SURVEY={s}&SFACTR={size}&RETURN=FITS"
 	    , calc: function(values) {
 		    values.size = Math.floor((values.w+values.h)/2)
@@ -177,7 +177,7 @@
 		}
 	})
 
-	Surveys = {   saoDSS: saoDSS
+	Services = {   saoDSS: saoDSS
 		    , stsDSS: stsDSS
 		    , esoDSS: esoDSS
 		    , ipac2m: ipac2m
@@ -194,7 +194,7 @@
 	<form id="archive-box">
 
 
-	Image archive : <select name=survey>
+	Image archive : <select name=service>
 			<option value=saoDSS>SAO DSS1</option>
 			<optgroup label="StSci DSS">
 			    <option value=stsDSS:poss2ukstu_ir>StSci DSS2 Infrared</option>
@@ -231,7 +231,7 @@
 	<tr><td> Object: </td> <td> <input type=text name=object size=10> </td>
 	    <td></td>
 	    <td></td>
-	    <td> <input type=button value=Go onclick='ImageGo()'> </td>
+	    <td> <input type=button value=Go onclick='ServiceGo()'> </td>
 	    <td>&nbsp;&nbsp;</td>
 	    <td> <input type=checkbox name=gzip> Use Compression</td>
 	</tr>
