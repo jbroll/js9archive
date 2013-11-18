@@ -20,172 +20,14 @@
       ***********************************************/
       </script>
       <script type="text/javascript" src="js/archive/subst.js"></script>
+      <script type="text/javascript" src="js/archive/starbase.js"></script>
+      <script type="text/javascript" src="js/archive/image-services.js"></script>
+      <script type="text/javascript" src="js/archive/catalog-services.js"></script>
+      <script type="text/javascript" src="js/archive/archive.js"></script>
 
       <script type="text/javascript" src="js/fitsy.js"></script>
       <script type="text/javascript" src="js/astrolib.js"></script>
       <script type="text/javascript" src="js9.js"></script>
-
-        <script>
-
-	function status(message) {
-	    $("#status").text(message)
-	}
-
-
- 	function xhr(url, func) {
-	    var xhr = new XMLHttpRequest();
-
-	    xhr.open('GET', url, true);
-	    xhr.onload = func
-
-	    return xhr;
-	}
-
-
-	function ImageGo() {
-	    var form = $("#archive-box")[0]
-
-	    if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
-		return;
-	    }
-
-	    w = parseFloat(form.width.value)
-	    h = parseFloat(form.height.value)
-
-	    if ( w > 60 ) {
-		form.width.value = "60";
-		w = 60;
-	    }
-	    if ( h > 60 ) {
-		form.height.value = "60";
-		h = 60;
-	    }
-
-	    var survey = form.survey.options[form.survey.selectedIndex].value.split(":")
-	    var source = form.survey.options[form.survey.selectedIndex].innerHTML
-	    var server = Surveys[survey[0]]
-	    
-	    survey = survey[1]
-	    
-	    if ( form.object.value !== "" ) {
-		simbad=encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value)
-
-		var reply = xhr(simbad, function(e) {
-		    var coords = reply.responseText.split(" ");
-
-		    form.ra.value  = coords[0]
-		    form.dec.value = coords[1]
-
-		    status("");
-		    server.getimage({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
-				    , r: form.ra.value, d: form.dec.value
-				    , c: form.gzip.checked
-				    , s: survey
-				    , source : source
-
-				    , proxy: form.proxy.checked
-				  }
-				, $("#status"));
-		})
-		reply.addEventListener("progress", function(e) { status("progress " + e.loaded.toString()) });
-		reply.addEventListener("error"	 , function(e) { status("Name service error"); });
-		reply.addEventListener("abort"	 , function(e) { status("Name service aborted"); });
-	        reply.send();
-
-		return
-	    }
-
-	    server.getimage({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
-			    , r: form.ra.value, d: form.dec.value
-			    , c: form.gzip.checked
-			    , s: survey
-			    , source : source
-
-			    , proxy: form.proxy.checked
-			  }
-			, $("#status"));
-	}
-
-	function ImageService(params) {
-	    this.params = params;
-
-	    this.getimage = function (values, messages) {
-
-		this.params.calc(values)
-
-		var url = subst(this.params.url, values)
-		
-		if ( values.proxy ) {
-		    url = url.replace(/\?/g, "@")
-		    url = url.replace(/&/g, "!")
-		    url = url.replace(/\+/g, "")
-
-		    url = encodeURI(url)
-
-		    url="http://hopper.si.edu/http/CORS-proxy?Q=" + url
-		}
-		Fitsy.fetchURL(values.name, url, messages);
-	    }
-	}
-
-	saoDSS = new ImageService({
-	      url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
-	    , calc: function(values) {
-		    if ( values.c ) {
-			values.c = "gzip"
-		    }
-		    values.name = values.name + " " + values.source;
-		}
-	})
-
-	stsDSS = new ImageService({
-	      url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
-	    , calc: function(values) {
-		    if ( values.c ) {
-			values.c = "gz"
-		    } else {
-			values.c = "none"
-		    }
-		    values.name = values.name + " " + values.source;
-		}
-	})
-
-	esoDSS = new ImageService({
-	      url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
-	    , calc: function(values) {
-		    if ( values.c ) {
-			values.c = "display/gz-fits"
-		    } else {
-			values.c = "application/x-fits"
-		    }
-		    values.name = values.name + " " + values.source;
-		}
-	})
-
-	ipac2m  = new ImageService({
-	      url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
-	    , calc: function(values) {
-		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60)
-		    values.name = values.name + " " + values.source;
-		}
-	})
-
-	skyvew  = new ImageService({
-	      url: "http://skys.gsfc.nasa.gov/cgi-bin/images?VCOORD={ra},{dec}&SURVEY={s}&SFACTR={size}&RETURN=FITS"
-	    , calc: function(values) {
-		    values.size = Math.floor((values.w+values.h)/2)
-		    values.name = values.name + " " + values.source;
-		}
-	})
-
-	Surveys = {   saoDSS: saoDSS
-		    , stsDSS: stsDSS
-		    , esoDSS: esoDSS
-		    , ipac2m: ipac2m
-		    , skyvew: skyvew
-		}
-
-        </script>
     </head>
     <body>
     <div class="JS9Menubar"></div>
@@ -195,7 +37,8 @@
 	<form id="archive-box">
 
 
-	Image archive : <select name=survey>
+	Image archive : <select name=service>
+			<optgroup label="Image Archive Services">
 			<option value=saoDSS>SAO DSS1</option>
 			<optgroup label="StSci DSS">
 			    <option value=stsDSS:poss2ukstu_ir>StSci DSS2 Infrared</option>
@@ -225,6 +68,13 @@
 			    <option value=skyvew:sdssz>SkyView SDSS z</option>
 --!>
 			</optgroup>
+			</optgroup>
+			<optgroup label="Image Archive Services">
+			<optgroup label="SAO">
+			    <option value=saoCat:gsc2>SAO gsc2</option>
+			    <option value=saoCat:tmc>SAO 2mass</option>
+			</optgroup>
+			</optgroup>
 			</select>
 			<p>
 
@@ -232,13 +82,13 @@
 	<tr><td> Object: </td> <td> <input type=text name=object size=10> </td>
 	    <td></td>
 	    <td></td>
-	    <td> <input type=button value=Go onclick='ImageGo()'> </td>
+	    <td> <input type=button value=Go onclick='ServiceGo()'> </td>
 	    <td>&nbsp;&nbsp;</td>
 	    <td> <input type=checkbox name=gzip> Use Compression</td>
 	</tr>
 	<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>
 	    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>
-	    <td></td>
+	    <td> <input type=button value=Get onclick='GetRADec()'> </td>
 	    <td></td>
 	    <td> <input type=checkbox name=proxy checked> Use CORS Proxy</td>
 	<tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>
