@@ -236,3 +236,25 @@
 	    }
 	}
 
+	function NewArchiveBox(el) {
+	    el.innerHTML = '<form class="archive-box"><ul><li>Image Services</li><li>Catalog Services</li></ul>\
+		<table>\
+		<tr><td> Object: </td> <td> <input type=text name=object size=10> </td>\
+		    <td></td>\
+		    <td></td>\
+		    <td> <input type=button value=Go onclick='ServiceGo()'> </td>\
+		    <td>&nbsp;&nbsp;</td>\
+		    <td> <input type=checkbox name=gzip> Use Compression</td>\
+		</tr>\
+		<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>\
+		    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>\
+		    <td> <input type=button value=Get onclick='GetRADec()'> </td>\
+		    <td></td>\
+		    <td> <input type=checkbox name=proxy checked> Use CORS Proxy</td>\
+		<tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>\
+		    <td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>\
+		</tr>\
+		</tr>\
+		<tr><td colspan=6><span id=status></span></td></tr>\
+		</form>'
+	}

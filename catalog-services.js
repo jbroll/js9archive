@@ -1,8 +1,8 @@
 
 	saoCat = new CatalogService({
 	      id: "saoCat"		
-	    , surveys: [   { name: "tmc",	descrip: "Two Mass Catalog"	}
-			   , { name: "gsc2",	descrip: "GST2"			}
+	    , surveys: [   { name: "gsc2",	descrip: "Guide Star Catalog 2"		}
+			 , { name: "tmc",	descrip: "Two Mass Catalog"	}
 			]
 	    , url: "http://www.cfa.harvard.edu/catalog/scat?catalog={s}&ra={r}&dec={d}&width={w}&height={h}&system={e}&compress={c}"
 	    , calc: function(values) {
