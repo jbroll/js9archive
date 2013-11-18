@@ -32,13 +32,55 @@
 	}
 
 
- 	function xhr(url, func) {
+ 	function xhr(params, func) {
+	    var title = ""
 	    var xhr = new XMLHttpRequest();
 
-	    xhr.open('GET', url, true);
-	    xhr.onload = func
+	    xhr.open('GET', params.url, true);
+
+	    if ( params.title ) {
+		title = params.title
+	    }
+	    if ( params.type ) {
+		xhr.responseType = params.type;
+	    }
+
+	    if ( params.status ) {
+		xhr.addEventListener("progress"	, function(e) { $(params.status).text(title + " progress " + e.loaded.toString()) });
+		xhr.addEventListener("error"	, function(e) { $(params.status).text(title + " service error"); });
+		xhr.addEventListener("abort"	, function(e) { $(params.status).text(title + " service aborted"); });
+	    }
+	    xhr.onload = function(e) {
+		if ( this.readyState === 4 ) {
+		    if ( this.status === 200 || this.status === 0 ) {
+			if ( params.status != undefined ) { $(params.status).text(""); }
+			func(e, this)
+		    }
+		}
+	    })
+	    xhr.send();
 
 	    return xhr;
+	}
+
+	function GetRADec() {
+	    var im = JS9.GetImage()
+	    var form = $("#catalog-box")[0]
+
+	    var coords = JS9.pix2wcs(im.iwcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/)
+
+	    form.ra.value = coords[0]
+	    form.dec.value = coords[1]
+
+	    var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2)
+	    var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2)
+
+	    form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*100)/100
+
+	    var c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0)
+	    var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2)
+
+	    form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*100)/100
 	}
 
 
@@ -70,13 +112,14 @@
 	    if ( form.object.value !== "" ) {
 		simbad=encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value)
 
-		var reply = xhr(simbad, function(e) {
-		    var coords = reply.responseText.split(" ");
+		xhr({ url: simbad, title: "Name", status: "#status" }, function(e, xhr) {
+		    var coords = xhr.responseText.split(" ");
 
 		    form.ra.value  = coords[0]
 		    form.dec.value = coords[1]
 
-		    status("");
+		    $("#status").text("");
+
 		    server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 				    , r: form.ra.value, d: form.dec.value
 				    , c: form.gzip.checked
@@ -87,10 +130,6 @@
 				  }
 				, $("#status"));
 		})
-		reply.addEventListener("progress", function(e) { status("progress " + e.loaded.toString()) });
-		reply.addEventListener("error"	 , function(e) { status("Name service error"); });
-		reply.addEventListener("abort"	 , function(e) { status("Name service aborted"); });
-	        reply.send();
 
 		return
 	    }
@@ -105,7 +144,7 @@
 			, $("#status"));
 	}
 
-	function RemoteService(params) {
+	function ImageService(params) {
 	    this.params = params;
 
 	    this.retrieve = function (values, messages) {
@@ -123,11 +162,24 @@
 
 		    url="http://hopper.si.edu/http/CORS-proxy?Q=" + url
 		}
-		Fitsy.fetchURL(values.name, url, messages);
+		xhr({ url: url, title: "Image", status: params.status, type: 'blob' }, function(e, xhr) {
+		    blob      = new Blob([xhr.response]);
+		    blob.name = values.name
+
+		    Fitsy.fitsopen(blob, function(fits) {
+			    var hdu = fits.hdu[0];
+
+			    if ( hdu.databytes === 0 && fits.hdu[1] !== undefined ) {
+				hdu = fits.hdu[1];
+			    }
+
+			    Fitsy.dataread(fits, hdu, params.deliver);
+		    };
+		})
 	    }
 	}
 
-	saoDSS = new RemoteService({
+	saoDSS = new ImageService({
 	      url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
 	    , calc: function(values) {
 		    if ( values.c ) {
@@ -137,7 +189,7 @@
 		}
 	})
 
-	stsDSS = new RemoteService({
+	stsDSS = new ImageService({
 	      url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
 	    , calc: function(values) {
 		    if ( values.c ) {
@@ -149,7 +201,7 @@
 		}
 	})
 
-	esoDSS = new RemoteService({
+	esoDSS = new ImageService({
 	      url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
 	    , calc: function(values) {
 		    if ( values.c ) {
@@ -161,7 +213,7 @@
 		}
 	})
 
-	ipac2m  = new RemoteService({
+	ipac2m  = new ImageService({
 	      url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
 		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60)
@@ -169,13 +221,120 @@
 		}
 	})
 
-	skyvew  = new RemoteService({
+	skyvew  = new ImageService({
 	      url: "http://skys.gsfc.nasa.gov/cgi-bin/images?VCOORD={ra},{dec}&SURVEY={s}&SFACTR={size}&RETURN=FITS"
 	    , calc: function(values) {
 		    values.size = Math.floor((values.w+values.h)/2)
 		    values.name = values.name + " " + values.source;
 		}
 	})
+
+	function CatalogService(params) {
+	    this.params = params;
+
+	    this.table2cat = function(im, table) {
+		var i
+		var shape = this.params.shape;
+
+		var xcol = table[this.params.xcol]
+		var ycol = table[this.params.ycol]
+
+		var wcol = 1;
+		var hcol = 1;
+
+
+		var pos_func = function(im, x, y) {
+		    var coords = JS9.WCS2Pix(im, x, y)
+
+		    return { x: coords[0], y: coords[1] }
+		}
+		var sizefunc;
+
+		switch ( shape ) {
+		 case "box":
+		    sizefunc = function(row) {
+			    return { width: 5, height: 5 };
+		    	}
+		    break;
+		 case "circle":
+		    sizefunc = function(row) {
+			    return { radius: 2.5 };
+		    	}
+		    break;
+		 case "ellipse":
+		    sizefunc = function(row) {
+			    return { width: 5, height: 5 };
+		    	}
+		    break;
+		}
+
+		regs = []
+		for ( i = 0; i < table.data.length; i++ ) {
+		    var pos = pos_func(im, table.data[i][xcol]*15, table.data[i][ycol])
+		    var siz = sizefunc(im, table.data[i][wcol], table.data[i][hcol])
+
+		    var reg = {   id: i.toString(), shape: shape
+				, x: pos.x, y: pos.y
+				, width: siz.width, height: siz.height, radius: siz.radius
+				, angle: 0
+			}
+
+		    regs[i] = reg
+		}
+
+		return regs
+	    }
+
+	    this.retrieve = function (values, messages) {
+
+		this.params.calc(values)
+
+		var url = subst(this.params.url, values)
+		
+		if ( values.proxy ) {
+		    url = url.replace(/\?/g, "@")
+		    url = url.replace(/&/g, "!")
+		    url = url.replace(/\+/g, "")
+
+		    url = encodeURI(url)
+
+		    url="http://hopper.si.edu/http/CORS-proxy?Q=" + url
+		}
+
+		var catalog = this;
+
+		var reply = xhr({ url: url, title: "Catalog", status: "#status" }, function(e) {
+		    var table = new Starbase(reply.responseText, { type: { default: Strtod } })
+		    var im    = JS9.GetImage()
+
+		    JS9_Catalog(im, catalog.name, catalog.table2cat(im, table))
+		})
+		reply.addEventListener("progress", function(e) { status("progress " + e.loaded.toString()) });
+		reply.addEventListener("error"	 , function(e) { status("Catalog service error"); });
+		reply.addEventListener("abort"	 , function(e) { status("Catalog service aborted"); });
+	        reply.send();
+	    }
+	}
+
+	saoCat = new CatalogService({
+	      url: "http://www.cfa.harvard.edu/catalog/scat?catalog={cat}&ra={r}&dec={d}&width={w}&height={h}&system={e}&compress={c}"
+	    , calc: function(values) {
+		    if ( values.c ) {
+			values.c = "gzip"
+		    }
+		    values.w    = values.w*60
+		    values.h    = values.h*60
+		    values.name = values.name + " " + values.source;
+		}
+
+	    , shape: "circle"
+	    , xcol:  "ra", ycol: "dec"
+	
+	})
+
+
+	Servers = {   saoCat: saoCat
+		}
 
 	Services = {   saoDSS: saoDSS
 		    , stsDSS: stsDSS
@@ -237,7 +396,7 @@
 	</tr>
 	<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>
 	    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>
-	    <td></td>
+	    <td> <input type=button value=Get onclick='GetRADec()'> </td>
 	    <td></td>
 	    <td> <input type=checkbox name=proxy checked> Use CORS Proxy</td>
 	<tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>
