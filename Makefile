@@ -3,7 +3,12 @@
 JS9   = ../js9
 JS9JS = $(JS9)/js/archive
 
-all: 	$(JS9)/js9archive.html $(JS9JS)/archive.js $(JS9JS)/image-services.js $(JS9JS)/catalog-services.js $(JS9JS)/subst.js $(JS9JS)/starbase.js
+all: 	$(JS9)/js9archive.html		\
+	$(JS9JS)/archive.js 		\
+	$(JS9JS)/image-services.js 	\
+	$(JS9JS)/catalog-services.js	\
+	$(JS9JS)/subst.js		\
+	$(JS9JS)/starbase.js
 
 $(JS9)/js9archive.html: js9archive.html
 	cp -p js9archive.html $(JS9)/js9archive.html

@@ -19,21 +19,42 @@
       * Visit http://www.dynamicdrive.com/ for full source code
       ***********************************************/
       </script>
+
+      <script type="text/javascript" src="js/fitsy.js"></script>
+      <script type="text/javascript" src="js/astrolib.js"></script>
+      <script type="text/javascript" src="js9.js"></script>
+
+      <script>
+      JS9.Plugins = []
+      JS9.RegisterPlugin = function (func, cls) {
+	  JS9.Plugins.push({ init: func, cls: cls})
+      }
+
+
+      $(document).ready(function() {
+
+	$.each(JS9.Plugins, function(i, plugin) {
+	      var el = $(plugin.cls)
+		  
+	      el.each(function(i, element) {
+		      plugin.init(element);
+	      })
+	  })
+      });
+      </script>
+
       <script type="text/javascript" src="js/archive/subst.js"></script>
       <script type="text/javascript" src="js/archive/starbase.js"></script>
       <script type="text/javascript" src="js/archive/archive.js"></script>
       <script type="text/javascript" src="js/archive/image-services.js"></script>
       <script type="text/javascript" src="js/archive/catalog-services.js"></script>
 
-      <script type="text/javascript" src="js/fitsy.js"></script>
-      <script type="text/javascript" src="js/astrolib.js"></script>
-      <script type="text/javascript" src="js9.js"></script>
     </head>
     <body>
     <div class="JS9Menubar"></div>
     <div class="JS9"></div>
 
         <br>
-	<div  id="JS9Archive">
+	<div  class="JS9Archive">
     </body>
 </html>

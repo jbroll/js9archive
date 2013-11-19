@@ -107,6 +107,7 @@
 	function ImageService(params) {
 	    Services[params.id] = this;
 
+	    this.type   = "image-service"
 	    this.params = params;
 
 	    this.retrieve = function (values, messages) {
@@ -164,6 +165,7 @@
 	function CatalogService(params) {
 	    Services[params.id] = this;
 
+	    this.type   = "catalog-service"
 	    this.params = params;
 
 	    this.table2cat = function(im, table) {
@@ -237,18 +239,22 @@
 	}
 
 	function NewArchiveBox(el) {
-	    el.innerHTML = '<form class="archive-box"><ul><li>Image Services</li><li>Catalog Services</li></ul>\
+	    el.innerHTML = '<form class="archive-box">\
+		<ul class="service-menu">\
+		    <li><a href="#">Image Services</a>  <ul class="image-services"> </ul></li>\
+		    <li><a href="#">Catalog Services</a><ul class="catalog-services"></ul></li>\
+	        </ul>\
 		<table>\
 		<tr><td> Object: </td> <td> <input type=text name=object size=10> </td>\
 		    <td></td>\
 		    <td></td>\
-		    <td> <input type=button value=Go onclick='ServiceGo()'> </td>\
+		    <td> <input type=button value=Go onclick="ServiceGo()"> </td>\
 		    <td>&nbsp;&nbsp;</td>\
 		    <td> <input type=checkbox name=gzip> Use Compression</td>\
 		</tr>\
 		<tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>\
 		    <td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>\
-		    <td> <input type=button value=Get onclick='GetRADec()'> </td>\
+		    <td> <input type=button value=Get onclick="GetRADec()"> </td>\
 		    <td></td>\
 		    <td> <input type=checkbox name=proxy checked> Use CORS Proxy</td>\
 		<tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>\
@@ -257,4 +263,27 @@
 		</tr>\
 		<tr><td colspan=6><span id=status></span></td></tr>\
 		</form>'
+
+	    var menu;
+	    
+	    menu = $(el).find(".image-services")
+
+	    $.each(Services, function(i, service) {
+		if ( service.type !== "image-service" ) { return; }
+
+		menu.append('<li><a href="#">' + service.params.descrip + '</a></li>')
+	    });
+
+	    menu = $(el).find(".catalog-services")
+
+	    $.each(Services, function(i, service) {
+		if ( service.type !== "catalog-service" ) { return; }
+
+		menu.append('<li><a href="#">' + service.params.descrip + '</a></li>')
+	    });
+
+	    $(el).find(".service-menu").menu()
 	}
+
+JS9.RegisterPlugin(NewArchiveBox, ".JS9Archive")
+

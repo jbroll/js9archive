@@ -1,6 +1,7 @@
 
 	saoCat = new CatalogService({
 	      id: "saoCat"		
+	    , descrip: "Catalogs@SAO"
 	    , surveys: [   { name: "gsc2",	descrip: "Guide Star Catalog 2"		}
 			 , { name: "tmc",	descrip: "Two Mass Catalog"	}
 			]
