@@ -1,8 +1,8 @@
 
 	saoDSS = new ImageService({
-	      id: "saoDSS"
-	    , descrip: "DSS1@SAO"
-	    , surveys: [ { key: "DSS1", descrip: "" } ]
+	      text: "DSS1@SAO"
+	    , value: "saoDSS"
+	    , surveys: [ { value: "DSS1", text: "DSS1" } ]
 	    , url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
 	    , calc: function(values) {
 		    if ( values.c ) {
@@ -13,13 +13,13 @@
 	})
 
 	stsDSS = new ImageService({
-	      id: "stsDSS"
-	    , descrip: "DSS@Stsci"
-	    , surveys: [   { key: "poss2ukstu_ir",	descrip: "StSci DSS2 Infrared"	}
-			 , { key: "poss2ukstu_red",	descrip: "StSci DSS2 Red"	}
-			 , { key: "poss2ukstu_blue",	descrip: "StSci DSS2 Blue"	}
-			 , { key: "poss1_red", 	descrip: "StSci DSS1 Red"	}
-			 , { key: "poss1_blue",	descrip: "StSci DSS1 Blue"	}
+	      text: "DSS@Stsci"
+	    , value: "stsDSS"
+	    , surveys: [   { value: "poss2ukstu_ir",	text: "StSci DSS2 Infrared"	}
+			 , { value: "poss2ukstu_red",	text: "StSci DSS2 Red"	}
+			 , { value: "poss2ukstu_blue",	text: "StSci DSS2 Blue"	}
+			 , { value: "poss1_red", 	text: "StSci DSS1 Red"	}
+			 , { value: "poss1_blue",	text: "StSci DSS1 Blue"	}
 			]
 	    , url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
 	    , calc: function(values) {
@@ -33,12 +33,12 @@
 	})
 
 	esoDSS = new ImageService({
-	      id: "esoDSS"
-	    , descrip: "DSS@ESO"
-	    , surveys: [   { key: "DSS2-infrared",	descrip: "ESO DSS2 Infrared"	}
-			 , { key: "DSS2-red",    	descrip: "ESO DSS2 Red"		}
-			 , { key: "DSS2-blue",		descrip: "ESO DSS2 Blue"	}
-			 , { key: "DSS1",		descrip: "ESO DSS1"		}
+	      text: "DSS@ESO"
+	    , value: "esoDSS"
+	    , surveys: [   { value: "DSS2-infrared",	text: "ESO DSS2 Infrared"	}
+			 , { value: "DSS2-red",    	text: "ESO DSS2 Red"		}
+			 , { value: "DSS2-blue",	text: "ESO DSS2 Blue"	}
+			 , { value: "DSS1",		text: "ESO DSS1"		}
 			]
 	    , url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
 	    , calc: function(values) {
@@ -52,11 +52,11 @@
 	})
 
 	ipac2m  = new ImageService({
-	      id: "ipac2m"
-	    , descrip: "2Mass@IPAC"
-	    , surveys: [   { key: "j", 			descrip: "IPAC 2Mass J"		}
-			 , { key: "h", 			descrip: "IPAC 2Mass H"		}
-			 , { key: "k", 			descrip: "IPAC 2Mass K"		}
+	      text: "2Mass@IPAC"
+	    , value: "ipac2m"
+	    , surveys: [   { value: "j", 		text: "IPAC 2Mass J"		}
+			 , { value: "h", 		text: "IPAC 2Mass H"		}
+			 , { value: "k", 		text: "IPAC 2Mass K"		}
 			]
 	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
