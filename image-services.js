@@ -1,3 +1,4 @@
+ImageService = require("./image-service");
 
 	saoDSS = new ImageService({
 	      text: "DSS1@SAO"

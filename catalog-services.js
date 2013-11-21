@@ -1,4 +1,6 @@
 
+CatalogService = require("./catalog-service");
+
 	saoCat = new CatalogService({
 	      text: "Catalogs@SAO"
 	    , value: "saoCat"		
