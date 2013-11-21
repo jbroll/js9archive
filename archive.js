@@ -80,7 +80,7 @@
 		    form.ra.value  = coords[0]
 		    form.dec.value = coords[1]
 
-		    $("#status").text("");
+		    // $("#status").text("");
 
 		    server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 				    , r: form.ra.value, d: form.dec.value
@@ -234,9 +234,11 @@
 
 		var reply = xhr({ url: url, title: "Catalog", status: "#status", CORS: values.CORS }, function(e) {
 		    var table = new Starbase(reply.responseText, { type: { default: Strtod } })
-		    var im    = JS9.GetImage()
+		    var im    = JS9.GetImage();
 
-		    JS9_Catalog(im, catalog.name, catalog.table2cat(im, table))
+		    $("#status").text("Found " + table.data.length.toString() + " rows")
+
+		    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name })
 		})
 	    }
 	}
