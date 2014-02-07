@@ -44,8 +44,6 @@ require("./catalog-services");
 		form.ra.value  = coords[0]
 		form.dec.value = coords[1]
 
-		// $("#status").text("");
-
 		server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 				, r: form.ra.value, d: form.dec.value
 				, c: form.gzip.checked
@@ -113,8 +111,11 @@ require("./catalog-services");
 	}
     }
 
-    function NewArchiveBox(el) {
-	el.innerHTML = '<form class="JS9Archive-form">\
+    function NewArchiveBox() {
+
+	div = this.div
+
+	div.innerHTML = '<form class="JS9Archive-form">\
 	    <select class="service-menu"></select>\
 	    <select class="server-menu"></select>\
 	    <select class="source-menu"></select>\
@@ -122,13 +123,13 @@ require("./catalog-services");
 	    <tr><td> Object: </td> <td> <input type=text name=object size=10> </td>\
 		<td></td>\
 		<td></td>\
-		<td> <input type=button value=Go class="service-go"> </td>\
+		<td> <input type=button value="Retrieve Data" class="service-go"> </td>\
 		<td>&nbsp;&nbsp;</td>\
 		<td> <input type=checkbox name=gzip> Use Compression</td>\
 	    </tr>\
 	    <tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>\
 		<td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>\
-		<td> <input type=button value=Get class="get-ra-dec"> </td>\
+		<td> <input type=button value="Set RA/Dec" class="get-ra-dec"> </td>\
 		<td></td>\
 		<td> <input type=checkbox name=CORS checked> Use CORS Proxy</td>\
 	    <tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>\
@@ -138,15 +139,15 @@ require("./catalog-services");
 	    <tr><td colspan=6><span id=status></span></td></tr>\
 	    </form>'
 
-	var mtyp = $(el).find(".service-menu");
-	var msrv = $(el).find(".server-menu");
-	var msrc = $(el).find(".source-menu");
+	var mtyp = $(div).find(".service-menu");
+	var msrv = $(div).find(".server-menu");
+	var msrc = $(div).find(".source-menu");
 
 	$(mtyp).data("submenu", msrv);
 	$(msrv).data("submenu", msrc);
 
-	$(el).find(".service-go").click(ServiceGo);
-	$(el).find(".get-ra-dec").click(GetRADec);
+	$(div).find(".service-go").click(ServiceGo);
+	$(div).find(".get-ra-dec").click(GetRADec);
 	
 	imgmenu = []
 	$.each(Remote.Services, function(i, service) {

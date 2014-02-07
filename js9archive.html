@@ -24,33 +24,10 @@
       <script type="text/javascript" src="js/astrolib.js"></script>
       <script type="text/javascript" src="js9.js"></script>
 
-      <script>
-      JS9.Plugins = []
-      JS9.RegisterPlugin = function (cls, func) {
-	  JS9.Plugins.push({ init: func, cls: cls})
-      }
-
-
-      $(document).ready(function() {
-
-	$.each(JS9.Plugins, function(i, plugin) {
-	      var el = $(plugin.cls)
-		  
-	      el.each(function(i, element) {
-		      plugin.init(element);
-	      })
-	  })
-      });
-      </script>
-
-      <script type="text/javascript" src="js/archive/js9archive.js"></script>
-
+      <script type="text/javascript" src="plugins/archive/js9archive.js"></script>
     </head>
     <body>
     <div class="JS9Menubar"></div>
     <div class="JS9"></div>
-
-        <br>
-	<div  class="JS9Archive">
     </body>
 </html>
