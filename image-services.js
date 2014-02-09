@@ -1,19 +1,24 @@
-ImageService = require("./image-service");
+/*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
+/*globals */
 
-	saoDSS = new ImageService({
+"use strict";
+
+var ImageService = require("./image-service");
+
+	var saoDSS = new ImageService({
 	      text: "DSS1@SAO"
 	    , value: "saoDSS"
 	    , surveys: [ { value: "DSS1", text: "DSS1" } ]
 	    , url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
 	    , calc: function(values) {
 		    if ( values.c ) {
-			values.c = "gzip"
+			values.c = "gzip";
 		    }
 		    values.name = values.name + " " + values.source;
 		}
-	})
+	});
 
-	stsDSS = new ImageService({
+	var stsDSS = new ImageService({
 	      text: "DSS@Stsci"
 	    , value: "stsDSS"
 	    , surveys: [   { value: "poss2ukstu_ir",	text: "StSci DSS2 Infrared"	}
@@ -25,15 +30,15 @@ ImageService = require("./image-service");
 	    , url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
 	    , calc: function(values) {
 		    if ( values.c ) {
-			values.c = "gz"
+			values.c = "gz";
 		    } else {
-			values.c = "none"
+			values.c = "none";
 		    }
 		    values.name = values.name + " " + values.source;
 		}
-	})
+	});
 
-	esoDSS = new ImageService({
+	var esoDSS = new ImageService({
 	      text: "DSS@ESO"
 	    , value: "esoDSS"
 	    , surveys: [   { value: "DSS2-infrared",	text: "ESO DSS2 Infrared"	}
@@ -44,15 +49,15 @@ ImageService = require("./image-service");
 	    , url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
 	    , calc: function(values) {
 		    if ( values.c ) {
-			values.c = "display/gz-fits"
+			values.c = "display/gz-fits";
 		    } else {
-			values.c = "application/x-fits"
+			values.c = "application/x-fits";
 		    }
 		    values.name = values.name + " " + values.source;
 		}
-	})
+	});
 
-	ipac2m  = new ImageService({
+	var ipac2m  = new ImageService({
 	      text: "2Mass@IPAC"
 	    , value: "ipac2m"
 	    , surveys: [   { value: "j", 		text: "IPAC 2Mass J"		}
@@ -61,10 +66,10 @@ ImageService = require("./image-service");
 			]
 	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
-		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60)
+		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
 		    values.name = values.name + " " + values.source;
 		}
-	})
+	});
 
 //	skyvew  = new ImageService({
 //	      id: "skyvew"

@@ -1,6 +1,10 @@
+/*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 
-exports.Services = {}
+"use strict";
+
+
+exports.Services = {};
 
 exports.Register = function(name, obj) {
 	exports.Services[name] = obj;
-}
+};

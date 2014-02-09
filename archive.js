@@ -1,21 +1,24 @@
+/*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
+/*globals $, JS9, Option */ 
 
-xhr = require("./xhr")
-Strtod = require("./strtod")
+"use strict";
 
-Remote = require("./remote-service")
+var xhr = require("./xhr");
+
+var Remote = require("./remote-service");
 
 require("./image-services");
 require("./catalog-services");
 
     function ServiceGo() {
-	var form = $(".JS9Archive-form")[0]
+	var form = $(".JS9Archive-form")[0];
 
 	if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
 	    return;
 	}
 
-	w = parseFloat(form.width.value)
-	h = parseFloat(form.height.value)
+	var w = parseFloat(form.width.value);
+	var h = parseFloat(form.height.value);
 
 	if ( w > 60 ) {
 	    form.width.value = "60";
@@ -26,23 +29,23 @@ require("./catalog-services");
 	    h = 60;
 	}
 
-	var msrv = $(form).find(".server-menu")[0]
-	var msrc = $(form).find(".source-menu")[0]
+	var msrv = $(form).find(".server-menu")[0];
+	var msrc = $(form).find(".source-menu")[0];
 
-	var service = msrv.options[msrv.selectedIndex].value
-	var source  = msrc.options[msrc.selectedIndex].value
-	var server  = Remote.Services[service]
+	var service = msrv.options[msrv.selectedIndex].value;
+	var source  = msrc.options[msrc.selectedIndex].value;
+	var server  = Remote.Services[service];
 
-	var text    = msrc.options[msrc.selectedIndex].innerHTML
+	var text    = msrc.options[msrc.selectedIndex].innerHTML;
 	
 	if ( form.object.value !== "" ) {
-	    simbad=encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value)
+	    var simbad = encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value);
 
 	    xhr({ url: simbad, title: "Name", status: "#status" }, function(e, xhr) {
 		var coords = xhr.responseText.trim().split(" ");
 
-		form.ra.value  = coords[0]
-		form.dec.value = coords[1]
+		form.ra.value  = coords[0];
+		form.dec.value = coords[1];
 
 		server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 				, r: form.ra.value, d: form.dec.value
@@ -53,9 +56,9 @@ require("./catalog-services");
 				, CORS: form.CORS.checked
 			      }
 			    , $("#status"));
-	    })
+	    });
 
-	    return
+	    return;
 	}
 
 	server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
@@ -70,50 +73,50 @@ require("./catalog-services");
     }
 
     function GetRADec() {
-	var im = JS9.GetImage()
-	var form = $(".JS9Archive-form")[0]
+	var im = JS9.GetImage();
+	var form = $(".JS9Archive-form")[0];
 
-	var coords = JS9.pix2wcs(im.iwcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/)
+	var coords = JS9.pix2wcs(im.iwcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
-	form.ra.value = coords[0]
-	form.dec.value = coords[1]
+	form.ra.value = coords[0];
+	form.dec.value = coords[1];
 
-	var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2)
-	var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2)
+	var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
+	var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
 
-	form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*100)/100
+	form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*100)/100;
 
-	var c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0)
-	var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2)
+	c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0);
+	c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2);
 
-	form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*100)/100
+	form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*100)/100;
     }
 
     function populateOptions(s) {
-	var select = s[0]
-	var dataArray = $(s).data("menu")
-	var submenu   = $(s).data("submenu")
+	var select = s[0];
+	var dataArray = $(s).data("menu");
+	var submenu   = $(s).data("submenu");
 
-	select.options.length = 0
+	select.options.length = 0;
 	$.each(dataArray, function(index, data) {
-	    select.options[select.options.length] = new Option(data.text, data.value)
+	    select.options[select.options.length] = new Option(data.text, data.value);
 
 	});
 
 	if ( submenu !== undefined ) {
-	    $(submenu).data("menu", dataArray[select.selectedIndex].subdata)
-	    populateOptions(submenu)
+	    $(submenu).data("menu", dataArray[select.selectedIndex].subdata);
+	    populateOptions(submenu);
 
 	    s.change(function() {
-		$(submenu).data("menu", dataArray[select.selectedIndex].subdata)
+		$(submenu).data("menu", dataArray[select.selectedIndex].subdata);
 		populateOptions(submenu);
-	    })
+	    });
 	}
     }
 
     function NewArchiveBox() {
 
-	div = this.div
+	var div = this.div;
 
 	div.innerHTML = '<form class="JS9Archive-form">\
 	    <select class="service-menu"></select>\
@@ -137,7 +140,7 @@ require("./catalog-services");
 	    </tr>\
 	    </tr>\
 	    <tr><td colspan=6><span id=status></span></td></tr>\
-	    </form>'
+	    </form>';
 
 	var mtyp = $(div).find(".service-menu");
 	var msrv = $(div).find(".server-menu");
@@ -149,24 +152,24 @@ require("./catalog-services");
 	$(div).find(".service-go").click(ServiceGo);
 	$(div).find(".get-ra-dec").click(GetRADec);
 	
-	imgmenu = []
+	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
 	    if ( service.type !== "image-service" ) { return; }
 
-	    imgmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys })
+	    imgmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys });
 	});
 
-	catmenu = []
+	var catmenu = [];
 	$.each(Remote.Services, function(i, service) {
 	    if ( service.type !== "catalog-service" ) { return; }
 
-	    catmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys })
+	    catmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys });
 	});
 
 	$(mtyp).data("menu", [ { text: "Image Servers",   value: "imgserv", subdata: imgmenu }
-			     , { text: "Catalog Servers", value: "catserv", subdata: catmenu }])
+			     , { text: "Catalog Servers", value: "catserv", subdata: catmenu }]);
 
-	populateOptions(mtyp)
+	populateOptions(mtyp);
     }
 
 module.exports = NewArchiveBox;
