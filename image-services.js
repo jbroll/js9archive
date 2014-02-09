@@ -71,7 +71,7 @@ var ImageService = require("./image-service");
 		}
 	});
 
-	cds = new ImageService({
+	var cds = new ImageService({
 	      text: "CDS Aladin Server"
 	    , value: "aladin@cds"
 	    , surveys: [   { value: "j", 		text: "IPAC 2Mass J"		}
@@ -80,10 +80,10 @@ var ImageService = require("./image-service");
 			]
 	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
-		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60)
+		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
 		    values.name = values.name + " " + values.source;
 		}
-	})
+	});
 
 //	skyvew  = new ImageService({
 //	      id: "skyvew"
