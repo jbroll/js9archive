@@ -80,7 +80,7 @@ function CatalogService(params) {
 
 	var reply = xhr({ url: url, title: "Catalog", status: "#status", CORS: values.CORS }, function(e) {
 	    var table = new Starbase(reply.responseText, { type: { default: Strtod } });
-	    var im    = JS9.GetImage();
+	    var im    = JS9.GetImage(values.display);
 
 	    $("#status").text("Found " + table.data.length.toString() + " rows");
 

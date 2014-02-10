@@ -10,7 +10,7 @@ var Remote = require("./remote-service");
 require("./image-services");
 require("./catalog-services");
 
-    function ServiceGo() {
+    function ServiceGo(display) {
 	var form = $(".JS9Archive-form")[0];
 
 	if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
@@ -54,6 +54,7 @@ require("./catalog-services");
 				, source: text
 
 				, CORS: form.CORS.checked
+				, display: display
 			      }
 			    , $("#status"));
 	    });
@@ -72,11 +73,13 @@ require("./catalog-services");
 		    , $("#status"));
     }
 
-    function GetRADec() {
-	var im = JS9.GetImage();
+    function GetRADec(display) {
+	var im = JS9.GetImage(display);
 	var form = $(".JS9Archive-form")[0];
 
-	var coords = JS9.pix2wcs(im.iwcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
+	var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
+
+	var c0 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
 
 	form.ra.value = coords[0];
 	form.dec.value = coords[1];
@@ -84,12 +87,12 @@ require("./catalog-services");
 	var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
 	var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
 
-	form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*100)/100;
+	form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*Math.cos(c0[1]/57.2958)*10)/10;
 
 	c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0);
 	c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2);
 
-	form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*100)/100;
+	form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*10)/10;
     }
 
     function populateOptions(s) {
@@ -122,18 +125,18 @@ require("./catalog-services");
 	    <select class="service-menu"></select>\
 	    <select class="server-menu"></select>\
 	    <select class="source-menu"></select>\
-	    <table>\
+	    <span style="float: right;"><input type=button value="Retrieve Data" class="service-go" style="font-weight: bold;"></span>	\
+														\
+	    <table width="98%">\
 	    <tr><td> Object: </td> <td> <input type=text name=object size=10> </td>\
 		<td></td>\
 		<td></td>\
-		<td> <input type=button value="Retrieve Data" class="service-go"> </td>\
 		<td>&nbsp;&nbsp;</td>\
 		<td> <input type=checkbox name=gzip> Use Compression</td>\
 	    </tr>\
 	    <tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>\
 		<td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>\
 		<td> <input type=button value="Set RA/Dec" class="get-ra-dec"> </td>\
-		<td></td>\
 		<td> <input type=checkbox name=CORS checked> Use CORS Proxy</td>\
 	    <tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>\
 		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>\
@@ -149,8 +152,8 @@ require("./catalog-services");
 	$(mtyp).data("submenu", msrv);
 	$(msrv).data("submenu", msrc);
 
-	$(div).find(".service-go").click(ServiceGo);
-	$(div).find(".get-ra-dec").click(GetRADec);
+	$(div).find(".service-go").click(function () { ServiceGo(this.display); });
+	$(div).find(".get-ra-dec").click(function () { GetRADec (this.display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {

@@ -31,7 +31,7 @@ function ImageService(params) {
 			hdu = fits.hdu[1];
 		    }
 
-		    Fitsy.dataread(fits, hdu, params.deliver);
+		    Fitsy.dataread(fits, hdu, params.deliver, params.display);
 	    });
 	});
     };
