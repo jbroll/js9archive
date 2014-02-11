@@ -127,6 +127,7 @@ require("./catalog-services");
 	    <select class="server-menu"></select>\
 	    <select class="source-menu"></select>\
 	    <span style="float: right;"><input type=button value="Retrieve Data" class="service-go" style="font-weight: bold;"></span>	\
+	    <p>\
 														\
 	    <table width="98%">\
 	    <tr><td> Object: </td> <td> <input type=text name=object size=10> </td>\
