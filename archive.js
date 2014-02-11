@@ -65,10 +65,11 @@ require("./catalog-services");
 	server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 			, r: form.ra.value, d: form.dec.value
 			, c: form.gzip.checked
-			, s: service
-			, source : source
+			, s: source
+			, source : text
 
 			, CORS: form.CORS.checked
+			, display: display
 		      }
 		    , $("#status"));
     }

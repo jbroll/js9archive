@@ -5,6 +5,18 @@
 
 function I(x) { return x; }
 
+function Starbase_Dashline(dash) {
+    var i;
+
+    for ( i = 0; i < dash.length; i++ ) {
+	if ( dash[i].match(/^-+$/) == null ) {
+	    return 0;
+	}
+    }
+
+    return i;
+}
+
 function Starbase(data, options) {
     var i, j;
 
@@ -22,7 +34,7 @@ function Starbase(data, options) {
     this.headline = data[line++].trim().split(/ *\t */);
     this.dashline = data[line++].trim().split(/ *\t */);
 
-    var dashes = this.dashline.length * (this.dashline === '' ? 0 : 1);
+    var dashes = Starbase_Dashline(this.dashline);
 
     // Read lines until the dashline is found
     //
@@ -31,7 +43,7 @@ function Starbase(data, options) {
 	this.headline = this.dashline;
 	this.dashline = data[line++].trim().split(/ *\t */);
 
-	dashes = this.dashline.length * (this.dashline === '' ? 0 : 1);
+	dashes = Starbase_Dashline(this.dashline);
     }
 
     // Create a vector of type converters
