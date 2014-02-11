@@ -153,8 +153,10 @@ require("./catalog-services");
 	$(mtyp).data("submenu", msrv);
 	$(msrv).data("submenu", msrc);
 
-	$(div).find(".service-go").click(function () { ServiceGo(this.display); });
-	$(div).find(".get-ra-dec").click(function () { GetRADec (this.display); });
+	var display = this.display;
+
+	$(div).find(".service-go").click(function () { ServiceGo(display); });
+	$(div).find(".get-ra-dec").click(function () { GetRADec (display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
