@@ -19,6 +19,8 @@ function ImageService(params) {
 	this.params.calc(values);
 
 	var url = subst(this.params.url, values);
+	var deliver = values.deliver;
+	var display = values.display;
 	
 	xhr({ url: url, title: "Image", status: params.status, type: 'blob', CORS: values.CORS }, function(e, xhr) {
 	    var blob      = new Blob([xhr.response]);
@@ -31,7 +33,7 @@ function ImageService(params) {
 			hdu = fits.hdu[1];
 		    }
 
-		    Fitsy.dataread(fits, hdu, params.deliver, params.display);
+		    Fitsy.dataread(fits, hdu, deliver, { display: display });
 	    });
 	});
     };

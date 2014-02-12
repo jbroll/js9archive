@@ -10,8 +10,8 @@ var Remote = require("./remote-service");
 require("./image-services");
 require("./catalog-services");
 
-    function ServiceGo(display) {
-	var form = $(".JS9Archive-form")[0];
+    function ServiceGo(div, display) {
+	var form = $(div).find(".JS9Archive-form")[0];
 
 	if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
 	    return;
@@ -74,9 +74,9 @@ require("./catalog-services");
 		    , $("#status"));
     }
 
-    function GetRADec(display) {
+    function GetRADec(div, display) {
 	var im = JS9.GetImage(display);
-	var form = $(".JS9Archive-form")[0];
+	var form = $(div).find(".JS9Archive-form")[0];
 
 	var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
@@ -156,8 +156,8 @@ require("./catalog-services");
 
 	var display = this.display;
 
-	$(div).find(".service-go").click(function () { ServiceGo(display); });
-	$(div).find(".get-ra-dec").click(function () { GetRADec (display); });
+	$(div).find(".service-go").click(function () { ServiceGo(div, display); });
+	$(div).find(".get-ra-dec").click(function () { GetRADec (div, display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
