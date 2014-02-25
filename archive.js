@@ -82,6 +82,8 @@ require("./catalog-services");
 
 	var c0 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
 
+	form.object.value = "";
+
 	form.ra.value = coords[0];
 	form.dec.value = coords[1];
 
