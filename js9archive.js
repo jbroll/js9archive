@@ -687,8 +687,9 @@ module.exports = xhr;
 
 
 JS9.RegisterPlugin("DataSources", "ArchivesCatalogs", require("./archive"), {
-	    viewMenuItem: "Archives & Catalogs",
-	    winDims: [600, 150]
+	menu: "analysis",
+	menuItem: "Archives & Catalogs",
+	winDims: [600, 150]
 });
 
 
