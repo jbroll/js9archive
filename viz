@@ -1,0 +1,40 @@
+#!/bin/sh
+#
+wget -O- -q "http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source=GSC2.3&-out.add=_RAJ%2C_DEJ&-sort=_r&-c=m32&-c.bm=4x4"
+
+exit
+
+
+2MASS-PSC	The 2MASS Point Source and 2MASS6x catalogues (2003)	470.9
+2MASX	The 2MASS Extended Source Catalogue (2003)	1.6
+AC2000.2	Astrographic catalog (mean epoch around 1900)	4.6
+AKARI	AKARI IRC (9/18um) and FIS (60-160um)all-sky Surveys	1.2
+ASCC-2.5	All-Sky Compiled Catalog of 2.5M* (2003)	2.5
+B/DENIS	The DENIS database (3rd Release 2005 version)	355.2
+CMC14	The Carlsberg Meridian Catalog 14 (-30<Dec<+50)	95.8
+GALEX	GALEX-DR5 sources from AIS and MIS (2011)	77.8
+GLIMPSE	Spitzer's GLIMPSE catalogs (Galactic Plane)	104.2
+GSC-ACT	The HST Guide Star Catalog reduced on Tycho (ACT)	25.2
+GSC1.2	The HST Guide Star Catalog 1.2	25.2
+GSC2.2	The GSC-II Catalog, Version 2.2.01 (obsoleted by GSC2.3)	455.8
+GSC2.3	The GSC-II Catalog, Version 2.3.2 (2006)	945.5
+HIP	The Hipparcos/Tycho Catalogs	1.0
+HIP2	Hipparcos, the new reduction (2007)	0.1
+IRAS	IRAS catalogs	0.5
+NOMAD1	The NOMAD Catalog (USNO-B1, UCAC2, 2MASS)	1117.6
+NVSS	The NRAO VLA Sky Survey (Radio 21cm)	1.7
+PGC	HYPERLEDA Catalog of galaxies	0.9
+Planck-DR1	Planck Public Release 1 Compact Source Catalogue	0.0
+PPMX	Positions and Proper Motions eXtended (2008)	18.0
+PPMXL	PPMXL catalog of positions and proper motions (2010)	910.4
+SDSS-DR7	The SDSS Photometric Catalog, Release 7 (2009)	357.1
+SDSS-DR9	The SDSS Photometric Catalog, Release 8 (2012)	794.0
+Tycho-2	The Tycho-2 Catalog (08-Feb-2000)	2.5
+UCAC2	The USNaval CCD Astrograph Catalog (replaced by UCAC3)	48.3
+UCAC3	The USNaval CCD Astrograph Catalog (2009)	100.7
+UCAC4	The USNaval CCD Astrograph Catalog, 4th Release (2012)	113.7
+UKIDSS	GPS(DR6)+LAS(9)+GCS(DR9)+DXS(9)	727.0
+USNO-A2	The USNO-A2.0 Catalog	526.2
+USNO-B1	The USNO-B1.0 Catalog	1045.9
+WISE	WISE (All-sky version)	563.9
+
