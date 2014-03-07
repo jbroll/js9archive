@@ -5,6 +5,22 @@
 
 var ImageService = require("./image-service");
 
+	var imageName = function (values) {
+	    var plus = "";
+	    var name;
+
+	    if ( values.d[0] !== "-" && values.d[0] !== "+" ) {
+		plus = "+";
+	    }
+	    if ( values.name !== "" ) {
+		name = values.name + " " + values.source;
+	    } else {
+	        name = values.source + " " + values.r + plus + values.d;
+	    }
+
+	    return name;
+	};
+
 	var saoDSS = new ImageService({
 	      text: "DSS1@SAO"
 	    , value: "saoDSS"
@@ -14,7 +30,7 @@ var ImageService = require("./image-service");
 		    if ( values.c ) {
 			values.c = "gzip";
 		    }
-		    values.name = values.name + " " + values.source;
+		    values.name  = imageName(values);
 		}
 	});
 
@@ -34,7 +50,7 @@ var ImageService = require("./image-service");
 		    } else {
 			values.c = "none";
 		    }
-		    values.name = values.name + " " + values.source;
+		    values.name  = imageName(values);
 		}
 	});
 
@@ -53,7 +69,7 @@ var ImageService = require("./image-service");
 		    } else {
 			values.c = "application/x-fits";
 		    }
-		    values.name = values.name + " " + values.source;
+		    values.name  = imageName(values);
 		}
 	});
 
@@ -67,7 +83,7 @@ var ImageService = require("./image-service");
 	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
 		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
-		    values.name = values.name + " " + values.source;
+		    values.name   = imageName(values);
 		}
 	});
 
@@ -81,7 +97,7 @@ var ImageService = require("./image-service");
 	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
 		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
-		    values.name = values.name + " " + values.source;
+		    values.name   = imageName(values);
 		}
 	});
 
