@@ -5,8 +5,14 @@
 
 
 JS9.RegisterPlugin("DataSources", "ArchivesCatalogs", require("./archive"), {
-	    viewMenuItem: "Archives & Catalogs",
-	    winDims: [600, 150]
+
+	menu:     "view",
+
+	menuItem: "Archives & Catalogs",
+	winTitle: "Archives & Catalogs",
+	winDims: [575, 150],
+
+	help:	"archive/archive.html"
 });
 
 
