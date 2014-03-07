@@ -6,6 +6,7 @@
 var xhr = require("./xhr");
 
 var Remote = require("./remote-service");
+var Strtod = require("./strtod");
 
 require("./image-services");
 require("./catalog-services");
@@ -38,30 +39,6 @@ require("./catalog-services");
 
 	var text    = msrc.options[msrc.selectedIndex].innerHTML;
 	
-	if ( form.object.value !== "" ) {
-	    var simbad = encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value);
-
-	    xhr({ url: simbad, title: "Name", status: "#status" }, function(e, xhr) {
-		var coords = xhr.responseText.trim().split(" ");
-
-		form.ra.value  = coords[0];
-		form.dec.value = coords[1];
-
-		server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
-				, r: form.ra.value, d: form.dec.value
-				, c: form.gzip.checked
-				, s: source
-				, source: text
-
-				, CORS: form.CORS.checked
-				, display: display
-			      }
-			    , $("#status"));
-	    });
-
-	    return;
-	}
-
 	server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 			, r: form.ra.value, d: form.dec.value
 			, c: form.gzip.checked
@@ -75,27 +52,43 @@ require("./catalog-services");
     }
 
     function GetRADec(div, display) {
-	var im = JS9.GetImage(display);
 	var form = $(div).find(".JS9Archive-form")[0];
 
-	var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
+	if ( form.object.value !== "" ) {
+	    var simbad = encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value);
 
-	var c0 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
+	    xhr({ url: simbad, title: "Name", status: "#status" }, function(e, xhr) {
+		var coords = xhr.responseText.trim().split(" ");
 
-	form.object.value = "";
+		if ( coords[0][1] !== ":" ) {
+		    form.ra.value  = coords[0];
+		    form.dec.value = coords[1];
+		} else {
+		    $("#status").html("<span style='color: red;'>Object not found?</span>");
+		}
+	    });
+	} else {
+	    var im = JS9.GetImage(display);
 
-	form.ra.value = coords[0];
-	form.dec.value = coords[1];
+	    var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
-	var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
-	var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
+	    var c0 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
 
-	form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*Math.cos(c0[1]/57.2958)*10)/10;
+	    form.object.value = "";
 
-	c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0);
-	c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2);
+	    form.ra.value = coords[0];
+	    form.dec.value = coords[1];
 
-	form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*10)/10;
+	    var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
+	    var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
+
+	    form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*Math.cos(c0[1]/57.2958)*10)/10;
+
+	    c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0);
+	    c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2);
+
+	    form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*10)/10;
+	}
     }
 
     function populateOptions(s) {
@@ -128,7 +121,7 @@ require("./catalog-services");
 	    <select class="service-menu"></select>\
 	    <select class="server-menu"></select>\
 	    <select class="source-menu"></select>\
-	    <span style="float: right;"><input type=button value="Retrieve Data" class="service-go" style="font-weight: bold;"></span>	\
+	    <span style="float: right;"><input type=button value="Set RA/Dec" class="get-ra-dec"><input type=button value="Retrieve Data" class="service-go" style="font-weight: bold;"></span>	\
 	    <p>\
 														\
 	    <table width="98%">\
@@ -138,15 +131,15 @@ require("./catalog-services");
 		<td>&nbsp;&nbsp;</td>\
 		<td> <input type=checkbox name=gzip> Use Compression</td>\
 	    </tr>\
-	    <tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>\
-		<td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>\
-		<td> <input type=button value="Set RA/Dec" class="get-ra-dec"> </td>\
-		<td> <input type=checkbox name=CORS checked> Use CORS Proxy</td>\
-	    <tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>\
-		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>\
-	    </tr>\
-	    </tr>\
-	    <tr><td colspan=6><span id=status></span></td></tr>\
+	    <tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>	\
+		<td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>	\
+		<td></td>									\
+		<td> <input type=checkbox name=CORS checked> Use CORS Proxy</td>		\
+	    <tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>	\
+		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>	\
+	    </tr>										\
+	    </tr>										\
+	    <tr><td colspan=6><span id=status></span></td></tr>					\
 	    </form>';
 
 	var mtyp = $(div).find(".service-menu");

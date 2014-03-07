@@ -9,7 +9,7 @@ function Starbase_Dashline(dash) {
     var i;
 
     for ( i = 0; i < dash.length; i++ ) {
-	if ( dash[i].match(/^-+$/) == null ) {
+	if ( dash[i].match(/^-+$/) === null ) {
 	    return 0;
 	}
     }
