@@ -21,7 +21,7 @@ var ImageService = require("./image-service");
 	var stsDSS = new ImageService({
 	      text: "DSS@Stsci"
 	    , value: "stsDSS"
-	    , surveys: [   { value: "poss2ukstu_ir",	text: "StSci DSS2 Infrared"	}
+	    , surveys: [   { value: "poss2ukstu_ir",	text: "StSci DSS2 IR"	}
 			 , { value: "poss2ukstu_red",	text: "StSci DSS2 Red"	}
 			 , { value: "poss2ukstu_blue",	text: "StSci DSS2 Blue"	}
 			 , { value: "poss1_red", 	text: "StSci DSS1 Red"	}
@@ -41,10 +41,10 @@ var ImageService = require("./image-service");
 	var esoDSS = new ImageService({
 	      text: "DSS@ESO"
 	    , value: "esoDSS"
-	    , surveys: [   { value: "DSS2-infrared",	text: "ESO DSS2 Infrared"	}
-			 , { value: "DSS2-red",    	text: "ESO DSS2 Red"		}
+	    , surveys: [   { value: "DSS2-infrared",	text: "ESO DSS2 IR"	}
+			 , { value: "DSS2-red",    	text: "ESO DSS2 Red"	}
 			 , { value: "DSS2-blue",	text: "ESO DSS2 Blue"	}
-			 , { value: "DSS1",		text: "ESO DSS1"		}
+			 , { value: "DSS1",		text: "ESO DSS1"	}
 			]
 	    , url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
 	    , calc: function(values) {
