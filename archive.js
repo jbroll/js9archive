@@ -13,7 +13,7 @@
     require("./image-services");
     require("./catalog-services");
 
-    function ServiceGo(div, display) {
+    function serviceGo(div, display) {
 	var form = $(div).find(".JS9Archive-form")[0];
 
 	if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
@@ -23,6 +23,9 @@
 	var w = parseFloat(form.width.value);
 	var h = parseFloat(form.height.value);
 
+	if ( form.dec.value[0] !== "-" && form.dec.value[0] !== "+" ) {
+	    form.dec.value  = "+" + form.dec.value;
+	}
 	if ( w > 60 ) {
 	    form.width.value = "60";
 	    w = 60;
@@ -41,6 +44,7 @@
 
 	var text    = msrc.options[msrc.selectedIndex].innerHTML;
 	
+
 	server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 			, r: form.ra.value, d: form.dec.value
 			, c: form.gzip.checked
@@ -50,23 +54,23 @@
 			, CORS: form.CORS.checked
 			, display: display
 		      }
-		    , $("#catstatus"));
+		    , $("#status"));
     }
 
-    function GetRADec(div, display) {
+    function getRADec(div, display) {
 	var form = $(div).find(".JS9Archive-form")[0];
 
 	if ( form.object.value !== "" ) {
 	    var simbad = encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value);
 
-	    xhr({ url: simbad, title: "Name", status: "#catstatus" }, function(e, xhr) {
+	    xhr({ url: simbad, title: "Name", status: "#status" }, function(e, xhr) {
 		var coords = xhr.responseText.trim().split(" ");
 
 		if ( coords[0][1] !== ":" ) {
 		    form.ra.value  = coords[0];
 		    form.dec.value = coords[1];
 		} else {
-		    $("#catstatus").html("<span style='color: red;'>Object not found?</span>");
+		    $("#status").html("<span style='color: red;'>Object not found?</span>");
 		}
 	    });
 	} else {
@@ -141,7 +145,7 @@
 		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>	\
 	    </tr>										\
 	    </tr>										\
-	    <tr><td colspan=6><span id=catstatus></span></td></tr>					\
+	    <tr><td colspan=6><span id=status></span></td></tr>					\
 	    </form>';
 
 	var mtyp = $(div).find(".service-menu");
@@ -153,8 +157,8 @@
 
 	var display = this.display;
 
-	$(div).find(".service-go").click(function () { ServiceGo(div, display); });
-	$(div).find(".get-ra-dec").click(function () { GetRADec (div, display); });
+	$(div).find(".service-go").click(function () { serviceGo(div, display); });
+	$(div).find(".get-ra-dec").click(function () { getRADec (div, display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
@@ -272,7 +276,7 @@ function CatalogService(params) {
 	var catalog = this;
 
 	var reply = xhr({ url: url, title: "Catalog", status: "#catstatus", CORS: values.CORS }, function(e) {
-	    var table = new Starbase(reply.responseText, { type: { default: Strtod } });
+	    var table = new Starbase(reply.responseText, { type: { default: Strtod }, units: values.units });
 	    var im    = JS9.GetImage(values.display);
 
 	    $("#catstatus").text("Found " + table.data.length.toString() + " rows");
@@ -313,6 +317,39 @@ var CatalogService = require("./catalog-service");
 	
 	});
 
+	var vizCat = new CatalogService({
+	      text: "Catalogs@Vizier"
+	    , value: "vizCat"		
+	    , surveys: [   { value: "2MASS-PSC",	text: "2MASS Point Source + 2MASS6x"	}
+			 , { value: "2MASX",		text: "2MASS Extended Source"		}
+			 , { value: "AKARI",		text: "AKARI IRC (9/18um) and FIS (60-160um)"	}
+			 , { value: "B/DENIS",		text: "DENIS 3rd Release 2005"		}
+			 , { value: "GLIMPSE",		text: "Spitzer's GLIMPSE"		}
+			 , { value: "GSC2.3",		text: "GSC-II Catalog, Version 2.3.2"	}
+			 , { value: "HIP2",		text: "Hipparcos (2007)"		}
+			 , { value: "IRAS",		text: "IRAS "				}
+			 , { value: "NOMAD1",		text: "NOMAD Catalog"			}
+			 , { value: "NVSS",		text: "NRAO VLA Sky Survey"		}
+			 , { value: "SDSS-DR9",		text: "SDSS Photometric Catalog"	}
+			 , { value: "Tycho-2",		text: "Tycho-2"				}
+			 , { value: "UCAC4",		text: "UCAC 4th Release"		}
+			 , { value: "USNO-A2",		text: "USNO-A2"				}
+			 , { value: "USNO-B1",		text: "USNO-B1"				}
+			 , { value: "WISE",		text: "WISE"				}
+			]
+	    , url: "http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source={s}&-out.add=_RAJ%2C_DEJ&-c={r}{d}&-c.bm={w}x{h}"
+	    , calc: function(values) {
+		    if ( values.c ) {
+			values.c = "gzip";
+		    }
+		    values.name = values.name + " " + values.source;
+		}
+
+	    , shape: "circle"
+	    , xcol:  "_RAJ2000", ycol: "_DEJ2000"
+	    , units: true
+	
+	});
 
 },{"./catalog-service":2}],4:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
@@ -370,9 +407,6 @@ var ImageService = require("./image-service");
 	    var plus = "";
 	    var name;
 
-	    if ( values.d[0] !== "-" && values.d[0] !== "+" ) {
-		plus = "+";
-	    }
 	    if ( values.name !== "" ) {
 		name = values.name + " " + values.source;
 	    } else {
@@ -493,7 +527,7 @@ exports.Register = function(name, obj) {
 
 function I(x) { return x; }
 
-function Starbase_Dashline(dash) {
+function starbase_Dashline(dash) {
     var i;
 
     for ( i = 0; i < dash.length; i++ ) {
@@ -512,7 +546,7 @@ function Starbase(data, options) {
     this.type = [];
     this.data = [];
 
-    data = data.substring(0, data.length-1).split("\n");
+    data = data.replace(/\s+$/,"").split("\n");
     var line = 0;
 
     if ( options && options.skip ) {
@@ -520,18 +554,28 @@ function Starbase(data, options) {
     }
 
     this.headline = data[line++].trim().split(/ *\t */);
+    if ( options.units ) {
+	this.unitline = data[line++].trim().split(/ *\t */);
+    }
     this.dashline = data[line++].trim().split(/ *\t */);
 
-    var dashes = Starbase_Dashline(this.dashline);
+    var dashes = starbase_Dashline(this.dashline);
 
     // Read lines until the dashline is found
     //
     while ( dashes === 0 || dashes !== this.headline.length ) {
 
-	this.headline = this.dashline;
+	if ( !options.units ) {
+	    this.headline = this.dashline;
+	} else {
+	    this.headline = this.unitline;
+	    this.unitline = this.dashunit;
+	}
+
 	this.dashline = data[line++].trim().split(/ *\t */);
 
-	dashes = Starbase_Dashline(this.dashline);
+
+	dashes = starbase_Dashline(this.dashline);
     }
 
     // Create a vector of type converters

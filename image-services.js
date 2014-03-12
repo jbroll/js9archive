@@ -9,9 +9,6 @@ var ImageService = require("./image-service");
 	    var plus = "";
 	    var name;
 
-	    if ( values.d[0] !== "-" && values.d[0] !== "+" ) {
-		plus = "+";
-	    }
 	    if ( values.name !== "" ) {
 		name = values.name + " " + values.source;
 	    } else {
