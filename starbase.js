@@ -24,7 +24,7 @@ function Starbase(data, options) {
     this.type = [];
     this.data = [];
 
-    data = data.substring(0, data.length-1).split("\n");
+    data = data.replace(/\s+$/,"").split("\n");
     var line = 0;
 
     if ( options && options.skip ) {
@@ -32,6 +32,9 @@ function Starbase(data, options) {
     }
 
     this.headline = data[line++].trim().split(/ *\t */);
+    if ( options.units ) {
+	this.unitline = data[line++].trim().split(/ *\t */);
+    }
     this.dashline = data[line++].trim().split(/ *\t */);
 
     var dashes = Starbase_Dashline(this.dashline);
@@ -40,8 +43,15 @@ function Starbase(data, options) {
     //
     while ( dashes === 0 || dashes !== this.headline.length ) {
 
-	this.headline = this.dashline;
+	if ( !options.units ) {
+	    this.headline = this.dashline;
+	} else {
+	    this.headline = this.unitline;
+	    this.unitline = this.dashunit;
+	}
+
 	this.dashline = data[line++].trim().split(/ *\t */);
+
 
 	dashes = Starbase_Dashline(this.dashline);
     }

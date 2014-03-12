@@ -22,6 +22,9 @@
 	var w = parseFloat(form.width.value);
 	var h = parseFloat(form.height.value);
 
+	if ( form.dec.value[0] !== "-" && form.dec.value[0] !== "+" ) {
+	    form.dec.value "+" + form.dec.value;
+	}
 	if ( w > 60 ) {
 	    form.width.value = "60";
 	    w = 60;
@@ -40,6 +43,7 @@
 
 	var text    = msrc.options[msrc.selectedIndex].innerHTML;
 	
+
 	server.retrieve({ name: form.object.value, e: "J2000", h: h.toString(), w: w.toString()
 			, r: form.ra.value, d: form.dec.value
 			, c: form.gzip.checked
