@@ -78,11 +78,11 @@ function CatalogService(params) {
 	
 	var catalog = this;
 
-	var reply = xhr({ url: url, title: "Catalog", status: "#status", CORS: values.CORS }, function(e) {
+	var reply = xhr({ url: url, title: "Catalog", status: "#catstatus", CORS: values.CORS }, function(e) {
 	    var table = new Starbase(reply.responseText, { type: { default: Strtod } });
 	    var im    = JS9.GetImage(values.display);
 
-	    $("#status").text("Found " + table.data.length.toString() + " rows");
+	    $("#catstatus").text("Found " + table.data.length.toString() + " rows");
 
 	    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name });
 	});

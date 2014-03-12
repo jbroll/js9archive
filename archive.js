@@ -50,7 +50,7 @@
 			, CORS: form.CORS.checked
 			, display: display
 		      }
-		    , $("#status"));
+		    , $("#catstatus"));
     }
 
     function GetRADec(div, display) {
@@ -59,14 +59,14 @@
 	if ( form.object.value !== "" ) {
 	    var simbad = encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value);
 
-	    xhr({ url: simbad, title: "Name", status: "#status" }, function(e, xhr) {
+	    xhr({ url: simbad, title: "Name", status: "#catstatus" }, function(e, xhr) {
 		var coords = xhr.responseText.trim().split(" ");
 
 		if ( coords[0][1] !== ":" ) {
 		    form.ra.value  = coords[0];
 		    form.dec.value = coords[1];
 		} else {
-		    $("#status").html("<span style='color: red;'>Object not found?</span>");
+		    $("#catstatus").html("<span style='color: red;'>Object not found?</span>");
 		}
 	    });
 	} else {
@@ -141,7 +141,7 @@
 		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>	\
 	    </tr>										\
 	    </tr>										\
-	    <tr><td colspan=6><span id=status></span></td></tr>					\
+	    <tr><td colspan=6><span id=catstatus></span></td></tr>					\
 	    </form>';
 
 	var mtyp = $(div).find(".service-menu");
@@ -271,11 +271,11 @@ function CatalogService(params) {
 	
 	var catalog = this;
 
-	var reply = xhr({ url: url, title: "Catalog", status: "#status", CORS: values.CORS }, function(e) {
+	var reply = xhr({ url: url, title: "Catalog", status: "#catstatus", CORS: values.CORS }, function(e) {
 	    var table = new Starbase(reply.responseText, { type: { default: Strtod } });
 	    var im    = JS9.GetImage(values.display);
 
-	    $("#status").text("Found " + table.data.length.toString() + " rows");
+	    $("#catstatus").text("Found " + table.data.length.toString() + " rows");
 
 	    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name });
 	});
