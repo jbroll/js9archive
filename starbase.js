@@ -47,7 +47,7 @@ function Starbase(data, options) {
 	    this.headline = this.dashline;
 	} else {
 	    this.headline = this.unitline;
-	    this.unitline = this.dashunit;
+	    this.unitline = this.dashline;
 	}
 
 	this.dashline = data[line++].trim().split(/ *\t */);

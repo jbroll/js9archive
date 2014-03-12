@@ -21,6 +21,8 @@ case "$url" in
     http://stdatu.stsci.edu/cgi-bin/dss_search*)			;;
     http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg*)	;;
 
+    http://vizier.u-strasbg.fr/viz-bin/asu-tsv*)			;;
+
     *)	exit 1 ;;
 esac
 

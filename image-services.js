@@ -84,19 +84,19 @@ var ImageService = require("./image-service");
 		}
 	});
 
-	var cds = new ImageService({
-	      text: "CDS Aladin Server"
-	    , value: "aladin@cds"
-	    , surveys: [   { value: "j", 		text: "IPAC 2Mass J"		}
-			 , { value: "h", 		text: "IPAC 2Mass H"		}
-			 , { value: "k", 		text: "IPAC 2Mass K"		}
-			]
-	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
-	    , calc: function(values) {
-		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
-		    values.name   = imageName(values);
-		}
-	});
+//	var cds = new ImageService({
+//	      text: "CDS Aladin Server"
+//	    , value: "aladin@cds"
+//	    , surveys: [   { value: "j", 		text: "IPAC 2Mass J"		}
+//			 , { value: "h", 		text: "IPAC 2Mass H"		}
+//			 , { value: "k", 		text: "IPAC 2Mass K"		}
+//			]
+//	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
+//	    , calc: function(values) {
+//		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
+//		    values.name   = imageName(values);
+//		}
+//	});
 
 //	skyvew  = new ImageService({
 //	      id: "skyvew"

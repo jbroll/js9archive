@@ -204,7 +204,7 @@
 var RemoteService = require("./remote-service");
 
 var Starbase = require("./starbase");
-var Strtod   = require("./strtod");
+var strtod   = require("./strtod");
 var subst    = require("./subst");
 var xhr      = require("./xhr");
 
@@ -270,13 +270,14 @@ function CatalogService(params) {
     this.retrieve = function (values, messages) {
 
 	this.params.calc(values);
+	values.units = this.params.units;
 
 	var url = subst(this.params.url, values);
 	
 	var catalog = this;
 
 	var reply = xhr({ url: url, title: "Catalog", status: "#catstatus", CORS: values.CORS }, function(e) {
-	    var table = new Starbase(reply.responseText, { type: { default: Strtod }, units: values.units });
+	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
 	    var im    = JS9.GetImage(values.display);
 
 	    $("#catstatus").text("Found " + table.data.length.toString() + " rows");
@@ -293,6 +294,8 @@ module.exports = CatalogService;
 /*globals */
 
 "use strict";
+
+var strtod   = require("./strtod");
 
 var CatalogService = require("./catalog-service");
 
@@ -320,15 +323,13 @@ var CatalogService = require("./catalog-service");
 	var vizCat = new CatalogService({
 	      text: "Catalogs@Vizier"
 	    , value: "vizCat"		
-	    , surveys: [   { value: "2MASS-PSC",	text: "2MASS Point Source + 2MASS6x"	}
+	    , surveys: [   { value: "II/246",		text: "2MASS"				}
 			 , { value: "2MASX",		text: "2MASS Extended Source"		}
-			 , { value: "AKARI",		text: "AKARI IRC (9/18um) and FIS (60-160um)"	}
 			 , { value: "B/DENIS",		text: "DENIS 3rd Release 2005"		}
 			 , { value: "GLIMPSE",		text: "Spitzer's GLIMPSE"		}
 			 , { value: "GSC2.3",		text: "GSC-II Catalog, Version 2.3.2"	}
 			 , { value: "HIP2",		text: "Hipparcos (2007)"		}
 			 , { value: "IRAS",		text: "IRAS "				}
-			 , { value: "NOMAD1",		text: "NOMAD Catalog"			}
 			 , { value: "NVSS",		text: "NRAO VLA Sky Survey"		}
 			 , { value: "SDSS-DR9",		text: "SDSS Photometric Catalog"	}
 			 , { value: "Tycho-2",		text: "Tycho-2"				}
@@ -337,21 +338,24 @@ var CatalogService = require("./catalog-service");
 			 , { value: "USNO-B1",		text: "USNO-B1"				}
 			 , { value: "WISE",		text: "WISE"				}
 			]
-	    , url: "http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source={s}&-out.add=_RAJ%2C_DEJ&-c={r}{d}&-c.bm={w}x{h}"
+	    , url: "http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source={s}&-out.add=_RAJ,_DEJ&-c={r}{d}&-c.bm={w}x{h}&-oc.form=s&-out.meta=h"
 	    , calc: function(values) {
 		    if ( values.c ) {
 			values.c = "gzip";
 		    }
+		    //values.r = (strtod(values.r) * 15).toFixed(4);
+		    //values.d =  strtod(values.d);
+		    //values.d = (values.d < 0 ? "-" : "+" ) + values.d.toFixed(4);
+
 		    values.name = values.name + " " + values.source;
 		}
 
 	    , shape: "circle"
 	    , xcol:  "_RAJ2000", ycol: "_DEJ2000"
-	    , units: true
 	
 	});
 
-},{"./catalog-service":2}],4:[function(require,module,exports){
+},{"./catalog-service":2,"./strtod":8}],4:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 /*globals xhr, Blob, Fitsy */
 
@@ -482,19 +486,19 @@ var ImageService = require("./image-service");
 		}
 	});
 
-	var cds = new ImageService({
-	      text: "CDS Aladin Server"
-	    , value: "aladin@cds"
-	    , surveys: [   { value: "j", 		text: "IPAC 2Mass J"		}
-			 , { value: "h", 		text: "IPAC 2Mass H"		}
-			 , { value: "k", 		text: "IPAC 2Mass K"		}
-			]
-	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
-	    , calc: function(values) {
-		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
-		    values.name   = imageName(values);
-		}
-	});
+//	var cds = new ImageService({
+//	      text: "CDS Aladin Server"
+//	    , value: "aladin@cds"
+//	    , surveys: [   { value: "j", 		text: "IPAC 2Mass J"		}
+//			 , { value: "h", 		text: "IPAC 2Mass H"		}
+//			 , { value: "k", 		text: "IPAC 2Mass K"		}
+//			]
+//	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
+//	    , calc: function(values) {
+//		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
+//		    values.name   = imageName(values);
+//		}
+//	});
 
 //	skyvew  = new ImageService({
 //	      id: "skyvew"
@@ -569,7 +573,7 @@ function Starbase(data, options) {
 	    this.headline = this.dashline;
 	} else {
 	    this.headline = this.unitline;
-	    this.unitline = this.dashunit;
+	    this.unitline = this.dashline;
 	}
 
 	this.dashline = data[line++].trim().split(/ *\t */);
@@ -613,7 +617,7 @@ module.exports = Starbase;
 },{}],8:[function(require,module,exports){
 
 function Strtod(str) {
-    var l = str.trim().split(":")
+    var l = str.trim().split(/[: ]/)
     var x;
 
     if ( l.length == 3 ) {
@@ -702,7 +706,7 @@ module.exports = subst;
 	    if ( params.CORS ) {
 		params.url = params.url.replace(/\?/g, "@")
 		params.url = params.url.replace(/&/g, "!")
-		params.url = params.url.replace(/\+/g, "")
+		//params.url = params.url.replace(/\+/g, "")
 
 		params.url = encodeURI(params.url)
 

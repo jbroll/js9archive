@@ -1,6 +1,6 @@
 
 function Strtod(str) {
-    var l = str.trim().split(":")
+    var l = str.trim().split(/[: ]/)
     var x;
 
     if ( l.length == 3 ) {

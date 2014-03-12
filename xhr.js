@@ -5,7 +5,7 @@
 	    if ( params.CORS ) {
 		params.url = params.url.replace(/\?/g, "@")
 		params.url = params.url.replace(/&/g, "!")
-		params.url = params.url.replace(/\+/g, "")
+		//params.url = params.url.replace(/\+/g, "")
 
 		params.url = encodeURI(params.url)
 
