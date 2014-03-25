@@ -79,11 +79,9 @@ function CatalogService(params) {
 	
 	var catalog = this;
 
-	var reply = xhr({ url: url, title: "Catalog", status: "#catstatus", CORS: values.CORS }, function(e) {
+	var reply = xhr({ url: url, title: "Catalog", status: messages, CORS: values.CORS }, function(e) {
 	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
 	    var im    = JS9.GetImage(values.display);
-
-	    $("#catstatus").text("Found " + table.data.length.toString() + " rows");
 
 	    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name });
 	});

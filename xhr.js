@@ -34,7 +34,7 @@
 	    _xhr.addEventListener("error"	, function(e) { status(title + " service error"); 			});
 	    _xhr.addEventListener("abort"	, function(e) { status(title + " service aborted"); 			});
 	}
-	xhr.onload = function(e) {
+	_xhr.onload = function(e) {
 	    if ( this.readyState === 4 ) {
 		if ( this.status === 200 || this.status === 0 ) {
 		    if ( status !== undefined ) { status(""); }

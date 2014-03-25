@@ -16,7 +16,6 @@ function ImageService(params) {
 
     this.retrieve = function (values, messages) {
 
-	var deliver = values.deliver;
 	var display = values.display;
 
 	params.calc(values);
@@ -24,23 +23,15 @@ function ImageService(params) {
 	var url = subst(params.url, values);
 
 	
-	xhr({ url: url, title: "Image", status: params.status, type: 'blob', CORS: values.CORS }, function(e, xhr) {
+	xhr({ url: url, title: "Image", status: messages, type: 'blob', CORS: values.CORS }, function(e, xhr) {
 
 	    if ( params.handler === undefined ) {
 		var blob      = new Blob([xhr.response]);
 		blob.name = values.name;
 
-		Fitsy.fitsopen(blob, function(fits) {
-			var hdu = fits.hdu[0];
-
-			if ( hdu.databytes === 0 && fits.hdu[1] !== undefined ) {
-			    hdu = fits.hdu[1];
-			}
-
-			Fitsy.dataread(fits, hdu, deliver, { display: display });
-		});
+		Fitsy.defaultHandleFITSFiles([blob], { display: display });
 	    } else {
-	    	this.handler(e, xhr, params, values);
+	    	params.handler(e, xhr, params, values);
 	    }
 	});
     };

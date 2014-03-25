@@ -1,4 +1,4 @@
-;(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 /*globals $, JS9, Option */ 
 
@@ -13,10 +13,17 @@
     require("./image-services");
     require("./catalog-services");
 
+
+
     function serviceGo(div, display) {
+	function status(text) {
+	    $(div).find(".status").html(text);
+	}
+		
+	
 	var form = $(div).find(".JS9Archive-form")[0];
 
-	if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
+	if ( form.ra.value === "" || form.dec.value === "" ) {
 	    return;
 	}
 
@@ -54,23 +61,27 @@
 			, CORS: form.CORS.checked
 			, display: display
 		      }
-		    , $("#status"));
+		    , status);
     }
 
     function getRADec(div, display) {
+	function status(text) {
+	    $(div).find(".status").html(text);
+	}
+
 	var form = $(div).find(".JS9Archive-form")[0];
 
 	if ( form.object.value !== "" ) {
 	    var simbad = encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value);
 
-	    xhr({ url: simbad, title: "Name", status: "#status" }, function(e, xhr) {
+	    xhr({ url: simbad, title: "Name", status: status }, function(e, xhr) {
 		var coords = xhr.responseText.trim().split(" ");
 
 		if ( coords[0][1] !== ":" ) {
 		    form.ra.value  = coords[0];
 		    form.dec.value = coords[1];
 		} else {
-		    $("#status").html("<span style='color: red;'>Object not found?</span>");
+		    status("<span style='color: red;'>Object not found?</span>");
 		}
 	    });
 	} else {
@@ -145,7 +156,7 @@
 		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>	\
 	    </tr>										\
 	    </tr>										\
-	    <tr><td colspan=6><span id=status></span></td></tr>					\
+	    <tr><td colspan=6><span class=status></span></td></tr>					\
 	    </form>';
 
 	var mtyp = $(div).find(".service-menu");
@@ -186,7 +197,7 @@
 
 	    menuItem: "Archives & Catalogs",
 	    winTitle: "Archives & Catalogs",
-	    winDims: [600, 150],
+	    winDims: [625, 175],
 
 	    help:	"archive/archive.html"
     });
@@ -276,11 +287,9 @@ function CatalogService(params) {
 	
 	var catalog = this;
 
-	var reply = xhr({ url: url, title: "Catalog", status: "#catstatus", CORS: values.CORS }, function(e) {
+	var reply = xhr({ url: url, title: "Catalog", status: messages, CORS: values.CORS }, function(e) {
 	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
 	    var im    = JS9.GetImage(values.display);
-
-	    $("#catstatus").text("Found " + table.data.length.toString() + " rows");
 
 	    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name });
 	});
@@ -374,25 +383,23 @@ function ImageService(params) {
 
     this.retrieve = function (values, messages) {
 
-	this.params.calc(values);
-
-	var url = subst(this.params.url, values);
-	var deliver = values.deliver;
 	var display = values.display;
+
+	params.calc(values);
+
+	var url = subst(params.url, values);
+
 	
-	xhr({ url: url, title: "Image", status: params.status, type: 'blob', CORS: values.CORS }, function(e, xhr) {
-	    var blob      = new Blob([xhr.response]);
-	    blob.name = values.name;
+	xhr({ url: url, title: "Image", status: messages, type: 'blob', CORS: values.CORS }, function(e, xhr) {
 
-	    Fitsy.fitsopen(blob, function(fits) {
-		    var hdu = fits.hdu[0];
+	    if ( params.handler === undefined ) {
+		var blob      = new Blob([xhr.response]);
+		blob.name = values.name;
 
-		    if ( hdu.databytes === 0 && fits.hdu[1] !== undefined ) {
-			hdu = fits.hdu[1];
-		    }
-
-		    Fitsy.dataread(fits, hdu, deliver, { display: display });
-	    });
+		Fitsy.defaultHandleFITSFiles([blob], { display: display });
+	    } else {
+	    	params.handler(e, xhr, params, values);
+	    }
 	});
     };
 }
@@ -484,6 +491,30 @@ var ImageService = require("./image-service");
 		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
 		    values.name   = imageName(values);
 		}
+	});
+
+	var dasch  = new ImageService({
+	      text: "DASCH"
+	    , value: "dasch"
+	    , surveys: [   { value: "plates", 		text: "Plates"		} ]
+
+	    , url: "http://dasch.rc.fas.harvard.edu/showtext.php?listflag=0&dateflag=dateform=j%20&coordflag=&radius=200&daterange=&seriesflag=&plateNumberflag=&classflag=&typeflag=%20-T%20wcsfit%20&pessimisticflag=&bflag=-j&nstars=5000&locstring=12:00:00%2030:00:00%20J2000"
+
+	    , calc: function(values) {
+		    values.radius = Math.min(Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60), 600);
+		    values.name   = imageName(values);
+	    }
+
+	    , picker: "<input type=button value='pick' class='picker'>"
+	    , controls: "<tr>><td>Series</td>   <td><input type=text size=10 name=series></td>		\n\
+	    		      <td>Plate No</td> <td><input type=text size=10 name=plate></td>           \n\
+	    		      <td>Class</td>    <td><input type=text size=10 name=class></td></tr>      \n\
+	    		  <tr><td>Date From</td><td><input type=text size=10 name=datefr></td>          \n\
+	    		      <td>Date To</td>  <td><input type=text size=10 name=dateto></td></tr>      \n\
+			 "
+	    , handler: function (e, xhr, params, values) {
+	    	
+	    }
 	});
 
 //	var cds = new ImageService({
@@ -615,32 +646,34 @@ module.exports = Starbase;
 
 
 },{}],8:[function(require,module,exports){
+/*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
+/*globals */ 
+
+'use strict';
 
 function Strtod(str) {
-    var l = str.trim().split(/[: ]/)
+    var l = str.trim().split(/[: ]/);
     var x;
 
-    if ( l.length == 3 ) {
+    if ( l.length === 3 ) {
 	var sign = 1;
 
 	if ( l[0].substr(0, 1) === "-" ) {
 	    sign = -1;
 	}
 
-	var h = parseFloat(l[0])
-	var m = parseFloat(l[1])
-	var s = parseFloat(l[2])
+	var h = parseFloat(l[0]);
+	var m = parseFloat(l[1]);
+	var s = parseFloat(l[2]);
 
-	x = sign * (Math.abs(h) + m/60.0 + s/3600.0)
+	x = sign * (Math.abs(h) + m/60.0 + s/3600.0);
     } else {
 	x = parseFloat(str);
     }
 
-    if ( isNaN(x) ) {
-	return str;
-    } else {
-	return x;
-    }
+    if ( isNaN(x) ) { return str; }
+
+    return x;
 }
 
 module.exports = Strtod;
@@ -699,51 +732,57 @@ function subst(text,data) {
 module.exports = subst;
 
 },{}],10:[function(require,module,exports){
+/*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
+/*globals XMLHttpRequest */ 
 
- 	function xhr(params, func) {
-	    var title = ""
+'use strict';
 
-	    if ( params.CORS ) {
-		params.url = params.url.replace(/\?/g, "@")
-		params.url = params.url.replace(/&/g, "!")
-		//params.url = params.url.replace(/\+/g, "")
+    function xhr(params, func) {
+	var status = params.status;
+	var title = "";
 
-		params.url = encodeURI(params.url)
+	if ( params.CORS ) {
+	    params.url = params.url.replace(/\?/g, "@");
+	    params.url = params.url.replace(/&/g, "!");
+	    //params.url = params.url.replace(/\+/g, "");
 
-		params.url="http://hopper.si.edu/http/CORS-proxy?Q=" + params.url
-	    }
+	    params.url = encodeURI(params.url);
 
-	    var xhr = new XMLHttpRequest();
+	    params.url="http://hopper.si.edu/http/CORS-proxy?Q=" + params.url;
+	}
 
-	    xhr.open('GET', params.url, true);
+	var _xhr = new XMLHttpRequest();
 
-	    if ( params.title ) {
-		title = params.title
-	    }
-	    if ( params.type ) {
-		xhr.responseType = params.type;
-	    }
+	_xhr.open('GET', params.url, true);
 
-	    if ( params.status ) {
-		xhr.addEventListener("progress"	, function(e) { $(params.status).text(title + " progress " + e.loaded.toString()) });
-		xhr.addEventListener("error"	, function(e) { $(params.status).text(title + " service error"); });
-		xhr.addEventListener("abort"	, function(e) { $(params.status).text(title + " service aborted"); });
-	    }
-	    xhr.onload = function(e) {
-		if ( this.readyState === 4 ) {
-		    if ( this.status === 200 || this.status === 0 ) {
-			if ( params.status != undefined ) { $(params.status).text(""); }
-			func(e, this)
-		    }
+	if ( params.title ) {
+	    title = params.title;
+	}
+	if ( params.type ) {
+	    _xhr.responseType = params.type;
+	}
+
+	if ( status !== undefined ) {
+	    
+	    _xhr.addEventListener("progress"	, function(e) { status(title + " progress " + e.loaded.toString());	});
+	    _xhr.addEventListener("error"	, function(e) { status(title + " service error"); 			});
+	    _xhr.addEventListener("abort"	, function(e) { status(title + " service aborted"); 			});
+	}
+	_xhr.onload = function(e) {
+	    if ( this.readyState === 4 ) {
+		if ( this.status === 200 || this.status === 0 ) {
+		    if ( status !== undefined ) { status(""); }
+
+		    func(e, this);
 		}
 	    }
-	    xhr.send();
+	};
+	_xhr.send();
 
-	    return xhr;
-	}
+	return _xhr;
+    }
 
 module.exports = xhr;
 
 
 },{}]},{},[1])
-;
