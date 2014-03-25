@@ -84,6 +84,19 @@ var ImageService = require("./image-service");
 		}
 	});
 
+	var dasch  = new ImageService({
+	      text: "DASCH"
+	    , value: "dasch"
+	    , surveys: [   { value: "plates", 		text: "Plates"		} ]
+
+	    , url: "http://dasch.rc.fas.harvard.edu/showtext.php?listflag=0&dateflag=dateform=j%20&coordflag=&radius=200&daterange=&seriesflag=&plateNumberflag=&classflag=&typeflag=%20-T%20wcsfit%20&pessimisticflag=&bflag=-j&nstars=5000&locstring=12:00:00%2030:00:00%20J2000"
+
+	    , calc: function(values) {
+		    values.radius = Math.min(Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60), 600);
+		    values.name   = imageName(values);
+		}
+	});
+
 //	var cds = new ImageService({
 //	      text: "CDS Aladin Server"
 //	    , value: "aladin@cds"
