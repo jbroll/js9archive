@@ -7,7 +7,7 @@
 var RemoteService = require("./remote-service");
 
 var Starbase = require("./starbase");
-var Strtod   = require("./strtod");
+var strtod   = require("./strtod");
 var subst    = require("./subst");
 var xhr      = require("./xhr");
 
@@ -73,16 +73,17 @@ function CatalogService(params) {
     this.retrieve = function (values, messages) {
 
 	this.params.calc(values);
+	values.units = this.params.units;
 
 	var url = subst(this.params.url, values);
 	
 	var catalog = this;
 
-	var reply = xhr({ url: url, title: "Catalog", status: "#status", CORS: values.CORS }, function(e) {
-	    var table = new Starbase(reply.responseText, { type: { default: Strtod }, units: values.units });
+	var reply = xhr({ url: url, title: "Catalog", status: "#catstatus", CORS: values.CORS }, function(e) {
+	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
 	    var im    = JS9.GetImage(values.display);
 
-	    $("#status").text("Found " + table.data.length.toString() + " rows");
+	    $("#catstatus").text("Found " + table.data.length.toString() + " rows");
 
 	    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name });
 	});

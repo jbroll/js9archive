@@ -3,6 +3,8 @@
 
 "use strict";
 
+var strtod   = require("./strtod");
+
 var CatalogService = require("./catalog-service");
 
 	var saoCat = new CatalogService({
@@ -29,15 +31,13 @@ var CatalogService = require("./catalog-service");
 	var vizCat = new CatalogService({
 	      text: "Catalogs@Vizier"
 	    , value: "vizCat"		
-	    , surveys: [   { value: "2MASS-PSC",	text: "2MASS Point Source + 2MASS6x"	}
+	    , surveys: [   { value: "II/246",		text: "2MASS"				}
 			 , { value: "2MASX",		text: "2MASS Extended Source"		}
-			 , { value: "AKARI",		text: "AKARI IRC (9/18um) and FIS (60-160um)"	}
 			 , { value: "B/DENIS",		text: "DENIS 3rd Release 2005"		}
 			 , { value: "GLIMPSE",		text: "Spitzer's GLIMPSE"		}
 			 , { value: "GSC2.3",		text: "GSC-II Catalog, Version 2.3.2"	}
 			 , { value: "HIP2",		text: "Hipparcos (2007)"		}
 			 , { value: "IRAS",		text: "IRAS "				}
-			 , { value: "NOMAD1",		text: "NOMAD Catalog"			}
 			 , { value: "NVSS",		text: "NRAO VLA Sky Survey"		}
 			 , { value: "SDSS-DR9",		text: "SDSS Photometric Catalog"	}
 			 , { value: "Tycho-2",		text: "Tycho-2"				}
@@ -46,16 +46,19 @@ var CatalogService = require("./catalog-service");
 			 , { value: "USNO-B1",		text: "USNO-B1"				}
 			 , { value: "WISE",		text: "WISE"				}
 			]
-	    , url: "http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source={s}&-out.add=_RAJ%2C_DEJ&-c={r}{d}&-c.bm={w}x{h}"
+	    , url: "http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source={s}&-out.add=_RAJ,_DEJ&-c={r}{d}&-c.bm={w}x{h}&-oc.form=s&-out.meta=h"
 	    , calc: function(values) {
 		    if ( values.c ) {
 			values.c = "gzip";
 		    }
+		    //values.r = (strtod(values.r) * 15).toFixed(4);
+		    //values.d =  strtod(values.d);
+		    //values.d = (values.d < 0 ? "-" : "+" ) + values.d.toFixed(4);
+
 		    values.name = values.name + " " + values.source;
 		}
 
 	    , shape: "circle"
 	    , xcol:  "_RAJ2000", ycol: "_DEJ2000"
-	    , units: true
 	
 	});

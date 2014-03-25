@@ -12,7 +12,7 @@
     require("./image-services");
     require("./catalog-services");
 
-    function ServiceGo(div, display) {
+    function serviceGo(div, display) {
 	var form = $(div).find(".JS9Archive-form")[0];
 
 	if ( form.ra.value === "" || form.dec.value === "" ) {
@@ -23,7 +23,7 @@
 	var h = parseFloat(form.height.value);
 
 	if ( form.dec.value[0] !== "-" && form.dec.value[0] !== "+" ) {
-	    form.dec.value "+" + form.dec.value;
+	    form.dec.value  = "+" + form.dec.value;
 	}
 	if ( w > 60 ) {
 	    form.width.value = "60";
@@ -56,7 +56,7 @@
 		    , $("#status"));
     }
 
-    function GetRADec(div, display) {
+    function getRADec(div, display) {
 	var form = $(div).find(".JS9Archive-form")[0];
 
 	if ( form.object.value !== "" ) {
@@ -156,8 +156,8 @@
 
 	var display = this.display;
 
-	$(div).find(".service-go").click(function () { ServiceGo(div, display); });
-	$(div).find(".get-ra-dec").click(function () { GetRADec (div, display); });
+	$(div).find(".service-go").click(function () { serviceGo(div, display); });
+	$(div).find(".get-ra-dec").click(function () { getRADec (div, display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
