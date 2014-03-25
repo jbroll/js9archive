@@ -16,25 +16,32 @@ function ImageService(params) {
 
     this.retrieve = function (values, messages) {
 
-	this.params.calc(values);
-
-	var url = subst(this.params.url, values);
 	var deliver = values.deliver;
 	var display = values.display;
+
+	params.calc(values);
+
+	var url = subst(params.url, values);
+
 	
 	xhr({ url: url, title: "Image", status: params.status, type: 'blob', CORS: values.CORS }, function(e, xhr) {
-	    var blob      = new Blob([xhr.response]);
-	    blob.name = values.name;
 
-	    Fitsy.fitsopen(blob, function(fits) {
-		    var hdu = fits.hdu[0];
+	    if ( params.handler === undefined ) {
+		var blob      = new Blob([xhr.response]);
+		blob.name = values.name;
 
-		    if ( hdu.databytes === 0 && fits.hdu[1] !== undefined ) {
-			hdu = fits.hdu[1];
-		    }
+		Fitsy.fitsopen(blob, function(fits) {
+			var hdu = fits.hdu[0];
 
-		    Fitsy.dataread(fits, hdu, deliver, { display: display });
-	    });
+			if ( hdu.databytes === 0 && fits.hdu[1] !== undefined ) {
+			    hdu = fits.hdu[1];
+			}
+
+			Fitsy.dataread(fits, hdu, deliver, { display: display });
+		});
+	    } else {
+	    	this.handler(e, xhr, params, values);
+	    }
 	});
     };
 }

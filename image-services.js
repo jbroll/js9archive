@@ -94,7 +94,11 @@ var ImageService = require("./image-service");
 	    , calc: function(values) {
 		    values.radius = Math.min(Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60), 600);
 		    values.name   = imageName(values);
-		}
+	    }
+
+	    , handler: function (e, xhr, params, values) {
+	    	
+	    }
 	});
 
 //	var cds = new ImageService({

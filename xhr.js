@@ -1,45 +1,52 @@
+/*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
+/*globals XMLHttpRequest */ 
 
- 	function xhr(params, func) {
-	    var title = ""
+'use strict';
 
-	    if ( params.CORS ) {
-		params.url = params.url.replace(/\?/g, "@")
-		params.url = params.url.replace(/&/g, "!")
-		//params.url = params.url.replace(/\+/g, "")
+    function xhr(params, func) {
+	var status = params.status;
+	var title = "";
 
-		params.url = encodeURI(params.url)
+	if ( params.CORS ) {
+	    params.url = params.url.replace(/\?/g, "@");
+	    params.url = params.url.replace(/&/g, "!");
+	    //params.url = params.url.replace(/\+/g, "");
 
-		params.url="http://hopper.si.edu/http/CORS-proxy?Q=" + params.url
-	    }
+	    params.url = encodeURI(params.url);
 
-	    var xhr = new XMLHttpRequest();
+	    params.url="http://hopper.si.edu/http/CORS-proxy?Q=" + params.url;
+	}
 
-	    xhr.open('GET', params.url, true);
+	var _xhr = new XMLHttpRequest();
 
-	    if ( params.title ) {
-		title = params.title
-	    }
-	    if ( params.type ) {
-		xhr.responseType = params.type;
-	    }
+	_xhr.open('GET', params.url, true);
 
-	    if ( params.status ) {
-		xhr.addEventListener("progress"	, function(e) { $(params.status).text(title + " progress " + e.loaded.toString()) });
-		xhr.addEventListener("error"	, function(e) { $(params.status).text(title + " service error"); });
-		xhr.addEventListener("abort"	, function(e) { $(params.status).text(title + " service aborted"); });
-	    }
-	    xhr.onload = function(e) {
-		if ( this.readyState === 4 ) {
-		    if ( this.status === 200 || this.status === 0 ) {
-			if ( params.status != undefined ) { $(params.status).text(""); }
-			func(e, this)
-		    }
+	if ( params.title ) {
+	    title = params.title;
+	}
+	if ( params.type ) {
+	    _xhr.responseType = params.type;
+	}
+
+	if ( status !== undefined ) {
+	    
+	    _xhr.addEventListener("progress"	, function(e) { status(title + " progress " + e.loaded.toString());	});
+	    _xhr.addEventListener("error"	, function(e) { status(title + " service error"); 			});
+	    _xhr.addEventListener("abort"	, function(e) { status(title + " service aborted"); 			});
+	}
+	xhr.onload = function(e) {
+	    if ( this.readyState === 4 ) {
+		if ( this.status === 200 || this.status === 0 ) {
+		    if ( status !== undefined ) { status(""); }
+
+		    func(e, this);
 		}
 	    }
-	    xhr.send();
+	};
+	_xhr.send();
 
-	    return xhr;
-	}
+	return _xhr;
+    }
 
 module.exports = xhr;
 
