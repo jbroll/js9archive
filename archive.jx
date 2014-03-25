@@ -15,7 +15,7 @@
     function ServiceGo(div, display) {
 	var form = $(div).find(".JS9Archive-form")[0];
 
-	if ( form.object.value === "" && ( form.ra.value === "" || form.dec.value === "" ) ) {
+	if ( form.ra.value === "" || form.dec.value === "" ) {
 	    return;
 	}
 
