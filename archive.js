@@ -14,7 +14,6 @@
     require("./catalog-services");
 
 
-
     function serviceGo(div, display) {
 	function status(text) {
 	    $(div).find(".status").html(text);
@@ -116,10 +115,12 @@
 	select.options.length = 0;
 	$.each(dataArray, function(index, data) {
 	    select.options[select.options.length] = new Option(data.text, data.value);
-
 	});
 
+	
+
 	if ( submenu !== undefined ) {
+
 	    $(submenu).data("menu", dataArray[select.selectedIndex].subdata);
 	    populateOptions(submenu);
 
@@ -128,6 +129,8 @@
 		populateOptions(submenu);
 	    });
 	}
+
+	fixcontrols(s);
     }
 
     function archInit() {
@@ -155,13 +158,15 @@
 	    <tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>	\
 		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>	\
 	    </tr>										\
-	    </tr>										\
-	    <tr><td colspan=6><span class=status></span></td></tr>					\
+	    </table>										\
+	    <div class=controls></div>								\
+	    <p><span class=status></span>							\
 	    </form>';
 
 	var mtyp = $(div).find(".service-menu");
 	var msrv = $(div).find(".server-menu");
 	var msrc = $(div).find(".source-menu");
+	var ctrl = $(div).find(".controls");
 
 	$(mtyp).data("submenu", msrv);
 	$(msrv).data("submenu", msrc);
@@ -175,14 +180,14 @@
 	$.each(Remote.Services, function(i, service) {
 	    if ( service.type !== "image-service" ) { return; }
 
-	    imgmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys });
+	    imgmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys, controls: service.params.controls });
 	});
 
 	var catmenu = [];
 	$.each(Remote.Services, function(i, service) {
 	    if ( service.type !== "catalog-service" ) { return; }
 
-	    catmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys });
+	    catmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys, controls: service.params.controls });
 	});
 
 	$(mtyp).data("menu", [ { text: "Image Servers",   value: "imgserv", subdata: imgmenu }

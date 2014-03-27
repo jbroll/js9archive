@@ -13,7 +13,6 @@
     require("./catalog-services");
 
 
-
     function serviceGo(div, display) {
 	function status(text) {
 	    $(div).find(".status").html(text);
@@ -115,10 +114,12 @@
 	select.options.length = 0;
 	$.each(dataArray, function(index, data) {
 	    select.options[select.options.length] = new Option(data.text, data.value);
-
 	});
 
+	
+
 	if ( submenu !== undefined ) {
+
 	    $(submenu).data("menu", dataArray[select.selectedIndex].subdata);
 	    populateOptions(submenu);
 
@@ -154,8 +155,9 @@
 	    <tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>	\
 		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>	\
 	    </tr>										\
-	    </tr>										\
-	    <tr><td colspan=6><span class=status></span></td></tr>					\
+	    </table>										\
+	    <div class=controls></div>								\
+	    <p><span class=status></span>							\
 	    </form>';
 
 	var mtyp = $(div).find(".service-menu");

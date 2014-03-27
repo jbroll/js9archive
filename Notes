@@ -1,7 +1,12 @@
 
-Flatten region/catalog options.
+ o Add table display. 
+ o Add coverage map
+	http://blog.thematicmapping.org/2013/09/creating-webgl-earth-with-threejs.html
 
-Printing
+
+ o Flatten region/catalog options.
+
+ o Printing
 
 http://aladin.u-strasbg.fr/glu/GluBrowser.pl
 
