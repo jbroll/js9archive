@@ -221,7 +221,7 @@ var RemoteService = require("./remote-service");
 
 var Starbase = require("./starbase");
 var strtod   = require("./strtod");
-var subst    = require("./subst");
+var template    = require("./template");
 var xhr      = require("./xhr");
 
 function CatalogService(params) {
@@ -288,7 +288,7 @@ function CatalogService(params) {
 	this.params.calc(values);
 	values.units = this.params.units;
 
-	var url = subst(this.params.url, values);
+	var url = template(this.params.url, values);
 	
 	var catalog = this;
 

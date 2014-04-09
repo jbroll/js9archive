@@ -5,7 +5,7 @@
 
 
 var RemoteService = require("./remote-service");
-var subst         = require("./subst");
+var template      = require("./template");
 var xhr           = require("./xhr");
 
 function ImageService(params) {
@@ -20,7 +20,7 @@ function ImageService(params) {
 
 	params.calc(values);
 
-	var url = subst(params.url, values);
+	var url = template(params.url, values);
 
 	
 	xhr({ url: url, title: "Image", status: messages, type: 'blob', CORS: values.CORS }, function(e, xhr) {
