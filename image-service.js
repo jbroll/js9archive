@@ -29,7 +29,11 @@ function ImageService(params) {
 		var blob      = new Blob([xhr.response]);
 		blob.name = values.name;
 
-		Fitsy.defaultHandleFITSFiles([blob], { display: display });
+		if ( Fitsy.handleFITSFile === undefined ) {
+		    Fitsy.handleFITSFiles([blob], { display: display });
+		} else {
+		    Fitsy.handleFITSFile(blob, { display: display });
+		}
 	    } else {
 	    	params.handler(e, xhr, params, values);
 	    }
