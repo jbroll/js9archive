@@ -129,8 +129,6 @@
 		populateOptions(submenu);
 	    });
 	}
-
-	fixcontrols(s);
     }
 
     function archInit() {
@@ -166,7 +164,6 @@
 	var mtyp = $(div).find(".service-menu");
 	var msrv = $(div).find(".server-menu");
 	var msrc = $(div).find(".source-menu");
-	var ctrl = $(div).find(".controls");
 
 	$(mtyp).data("submenu", msrv);
 	$(msrv).data("submenu", msrc);
@@ -180,14 +177,14 @@
 	$.each(Remote.Services, function(i, service) {
 	    if ( service.type !== "image-service" ) { return; }
 
-	    imgmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys, controls: service.params.controls });
+	    imgmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys });
 	});
 
 	var catmenu = [];
 	$.each(Remote.Services, function(i, service) {
 	    if ( service.type !== "catalog-service" ) { return; }
 
-	    catmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys, controls: service.params.controls });
+	    catmenu.push({ text: service.params.text, value: service.params.value, subdata: service.params.surveys });
 	});
 
 	$(mtyp).data("menu", [ { text: "Image Servers",   value: "imgserv", subdata: imgmenu }
@@ -221,7 +218,7 @@ var RemoteService = require("./remote-service");
 
 var Starbase = require("./starbase");
 var strtod   = require("./strtod");
-var template    = require("./template");
+var template = require("./template");
 var xhr      = require("./xhr");
 
 function CatalogService(params) {
@@ -296,14 +293,19 @@ function CatalogService(params) {
 	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
 	    var im    = JS9.GetImage(values.display);
 
-	    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name });
+	    JS9.NewShapeLayer(im, values.name, JS9.Catalogs.opts);
+	    JS9.RemoveShapes( im, values.name);
+
+	    var shapes = catalog.table2cat(im, table);
+
+	    JS9.AddShapes(im, values.name, shapes, {color: "yellow"});
 	});
     };
 }
 
 module.exports = CatalogService;
 
-},{"./remote-service":6,"./starbase":7,"./strtod":8,"./subst":9,"./xhr":10}],3:[function(require,module,exports){
+},{"./remote-service":6,"./starbase":7,"./strtod":8,"./template":9,"./xhr":10}],3:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 /*globals */
 
@@ -314,7 +316,7 @@ var strtod   = require("./strtod");
 var CatalogService = require("./catalog-service");
 
 	var saoCat = new CatalogService({
-	      text: "Catalogs@SAO"
+	      text:  "SAO"
 	    , value: "saoCat"		
 	    , surveys: [   { value: "tmc",	text: "Two Mass Catalog"	}
 			 , { value: "gsc2",	text: "Guide Star Catalog 2"		}
@@ -326,7 +328,7 @@ var CatalogService = require("./catalog-service");
 		    }
 		    values.w    = values.w*60;
 		    values.h    = values.h*60;
-		    values.name = values.name + " " + values.source;
+		    values.name = values.source + "@" + this.text;
 		}
 
 	    , shape: "circle"
@@ -335,7 +337,7 @@ var CatalogService = require("./catalog-service");
 	});
 
 	var vizCat = new CatalogService({
-	      text: "Catalogs@Vizier"
+	      text: "Vizier"
 	    , value: "vizCat"		
 	    , surveys: [   { value: "II/246",		text: "2MASS"				}
 			 , { value: "2MASX",		text: "2MASS Extended Source"		}
@@ -361,7 +363,7 @@ var CatalogService = require("./catalog-service");
 		    //values.d =  strtod(values.d);
 		    //values.d = (values.d < 0 ? "-" : "+" ) + values.d.toFixed(4);
 
-		    values.name = values.name + " " + values.source;
+		    values.name = values.source + "@" + this.text;
 		}
 
 	    , shape: "circle"
@@ -377,7 +379,7 @@ var CatalogService = require("./catalog-service");
 
 
 var RemoteService = require("./remote-service");
-var subst         = require("./subst");
+var template      = require("./template");
 var xhr           = require("./xhr");
 
 function ImageService(params) {
@@ -392,7 +394,7 @@ function ImageService(params) {
 
 	params.calc(values);
 
-	var url = subst(params.url, values);
+	var url = template(params.url, values);
 
 	
 	xhr({ url: url, title: "Image", status: messages, type: 'blob', CORS: values.CORS }, function(e, xhr) {
@@ -411,7 +413,7 @@ function ImageService(params) {
 
 module.exports = ImageService;
 
-},{"./remote-service":6,"./subst":9,"./xhr":10}],5:[function(require,module,exports){
+},{"./remote-service":6,"./template":9,"./xhr":10}],5:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 /*globals */
 
@@ -689,11 +691,19 @@ module.exports = Strtod;
 "use strict";
 
 
-function subst(text,data) {
+    function strrep(str, n) {
+	var i, s = '';
+
+	for ( i = 0; i < n; i++ ) { s += str; }
+
+	return s;
+    }
+
+function template(text,data) {
 	    
     return text.replace(/\{([a-zA-Z0-9_.%]*)\}/g,
 	function(m,key){
-	    var type, prec, fmt, i;
+	    var type, prec, widt = 0, fmt, i;
 	    var val = data;
 	
 	    key = key.split("%");
@@ -716,10 +726,16 @@ function subst(text,data) {
 	    }
 
 	    type = fmt.substring(fmt.length-1);
-	    prec = fmt.substring(1, fmt.length-1);
+	    prec = fmt.substring(0, fmt.length-1);
+
+	    prec = prec.split(".");
+
+	    widt = prec[0] | 0;
+	    prec = prec[1] | 0;
 
 	    switch ( type ) {
 	     case "s":
+		val = val.toString();
 		break;
 	     case "f":
 		val = val.toFixed(prec);
@@ -729,12 +745,20 @@ function subst(text,data) {
 		break;
 	    }
 
+	    if ( widt !== 0 && widt > val.length ) {
+		if ( widt > 0 ) {
+		    val = strrep(" ", widt-val.length) + val;
+		} else {
+		    val = val + strrep(" ", widt-val.length);
+		}
+	    }
+
 	    return val;
 	}
     );
 }
 
-module.exports = subst;
+module.exports = template;
 
 },{}],10:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */

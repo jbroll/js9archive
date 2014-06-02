@@ -8,7 +8,7 @@ all: 	archive.js
 SOURCES = archive.jx 			\
 	  starbase.js 			\
 	  strtod.js          		\
-	  subst.js          		\
+	  template.js          		\
 	  xhr.js          		\
 	  remote-service.js 		\
 	  image-service.js 		\

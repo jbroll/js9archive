@@ -8,7 +8,7 @@ var strtod   = require("./strtod");
 var CatalogService = require("./catalog-service");
 
 	var saoCat = new CatalogService({
-	      text: "Catalogs@SAO"
+	      text:  "SAO"
 	    , value: "saoCat"		
 	    , surveys: [   { value: "tmc",	text: "Two Mass Catalog"	}
 			 , { value: "gsc2",	text: "Guide Star Catalog 2"		}
@@ -20,7 +20,7 @@ var CatalogService = require("./catalog-service");
 		    }
 		    values.w    = values.w*60;
 		    values.h    = values.h*60;
-		    values.name = values.name + " " + values.source;
+		    values.name = values.source + "@" + this.text;
 		}
 
 	    , shape: "circle"
@@ -29,7 +29,7 @@ var CatalogService = require("./catalog-service");
 	});
 
 	var vizCat = new CatalogService({
-	      text: "Catalogs@Vizier"
+	      text: "Vizier"
 	    , value: "vizCat"		
 	    , surveys: [   { value: "II/246",		text: "2MASS"				}
 			 , { value: "2MASX",		text: "2MASS Extended Source"		}
@@ -55,7 +55,7 @@ var CatalogService = require("./catalog-service");
 		    //values.d =  strtod(values.d);
 		    //values.d = (values.d < 0 ? "-" : "+" ) + values.d.toFixed(4);
 
-		    values.name = values.name + " " + values.source;
+		    values.name = values.source + "@" + this.text;
 		}
 
 	    , shape: "circle"

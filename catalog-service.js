@@ -83,7 +83,12 @@ function CatalogService(params) {
 	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
 	    var im    = JS9.GetImage(values.display);
 
-	    JS9.Catalog(im, catalog.table2cat(im, table), { name: catalog.name });
+	    JS9.NewShapeLayer(im, values.name, JS9.Catalogs.opts);
+	    JS9.RemoveShapes( im, values.name);
+
+	    var shapes = catalog.table2cat(im, table);
+
+	    JS9.AddShapes(im, values.name, shapes, {color: "yellow"});
 	});
     };
 }

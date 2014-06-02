@@ -13,8 +13,6 @@
 
 function template(text,data) {
 	    
-console.log("\n")
-
     return text.replace(/\{([a-zA-Z0-9_.%]*)\}/g,
 	function(m,key){
 	    var type, prec, widt = 0, fmt, i;
