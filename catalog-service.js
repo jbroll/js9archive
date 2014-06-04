@@ -31,7 +31,7 @@ function CatalogService(params) {
 	var pos_func = function(im, x, y) {
 	    var coords = JS9.WCS2Pix(im, x, y);
 
-	    return { x: coords[0], y: coords[1] };
+	    return { x: coords.x, y: coords.y };
 	};
 	var sizefunc;
 

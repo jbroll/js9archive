@@ -88,22 +88,21 @@
 
 	    var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
-	    var c0 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
+	    var c0     = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
+	    //var coords = c0.str.split(" ");
 
-	    form.object.value = "";
-
-	    form.ra.value = coords[0];
+	    form.ra.value  = coords[0];
 	    form.dec.value = coords[1];
 
 	    var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
 	    var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
 
-	    form.width.value = Math.floor(Math.abs((c1[0]-c2[0])*60)*Math.cos(c0[1]/57.2958)*10)/10;
+	    form.width.value = Math.floor(Math.abs((c1.ra-c2.ra)*60)*Math.cos(c0.dec/57.2958)*10)/10;
 
 	    c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0);
 	    c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2);
 
-	    form.height.value = Math.floor(Math.abs((c1[1]-c2[1])*60)*10)/10;
+	    form.height.value = Math.floor(Math.abs((c1.dec-c2.dec)*60)*10)/10;
 	}
     }
 
@@ -241,7 +240,7 @@ function CatalogService(params) {
 	var pos_func = function(im, x, y) {
 	    var coords = JS9.WCS2Pix(im, x, y);
 
-	    return { x: coords[0], y: coords[1] };
+	    return { x: coords.x, y: coords.y };
 	};
 	var sizefunc;
 
@@ -404,7 +403,7 @@ function ImageService(params) {
 		blob.name = values.name;
 
 		if ( Fitsy.handleFITSFile === undefined ) {
-		    Fitsy.handleFITSFiles([blob], { display: display });
+		    Fitsy.handleFITSFiles(undefined, [blob], { display: display });
 		} else {
 		    Fitsy.handleFITSFile(blob, { display: display });
 		}

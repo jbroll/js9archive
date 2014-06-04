@@ -30,7 +30,7 @@ function ImageService(params) {
 		blob.name = values.name;
 
 		if ( Fitsy.handleFITSFile === undefined ) {
-		    Fitsy.handleFITSFiles([blob], { display: display });
+		    Fitsy.handleFITSFiles(undefined, [blob], { display: display });
 		} else {
 		    Fitsy.handleFITSFile(blob, { display: display });
 		}
