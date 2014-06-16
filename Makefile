@@ -18,6 +18,7 @@ SOURCES = archive.jx 			\
 
 archive.js : $(SOURCES)
 	browserify ./archive.jx  > archive.js
+	echo "" >> archive.js
 
 lint :
 	jslint $(SOURCES)
