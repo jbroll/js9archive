@@ -84,23 +84,23 @@
 		}
 	    });
 	} else {
-	    var im = JS9.GetImage(display);
+	    var im = JS9.GetImage({display: display});
 
 	    var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
-	    var c0     = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
+	    var c0     = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, im.raw.header.NAXIS2/2+1, {display: im});
 	    //var coords = c0.str.split(" ");
 
 	    form.ra.value  = coords[0] || "";
 	    form.dec.value = coords[1] || "";
 
-	    var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
-	    var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
+	    var c1 = JS9.PixToWCS(1,                      im.raw.header.NAXIS2/2+1, {display: im});
+	    var c2 = JS9.PixToWCS(im.raw.header.NAXIS1+1, im.raw.header.NAXIS2/2+1, {display: im});
 
 	    form.width.value = Math.floor(Math.abs((c1.ra-c2.ra)*60)*Math.cos(c0.dec/57.2958)*10)/10;
 
-	    c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0);
-	    c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2);
+	    c1 = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, 1, {display: im});
+	    c2 = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, im.raw.header.NAXIS2+1, {display: im});
 
 	    form.height.value = Math.floor(Math.abs((c1.dec-c2.dec)*60)*10)/10;
 	}
@@ -169,8 +169,8 @@
 
 	var display = this.display;
 
-	$(div).find(".service-go").click(function () { serviceGo(div, display); });
-	$(div).find(".get-ra-dec").click(function () { getRADec (div, display); });
+	$(div).find(".service-go").on("mouseup", function () { serviceGo(div, display); });
+	$(div).find(".get-ra-dec").on("mouseup", function () { getRADec (div, display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
@@ -206,6 +206,7 @@
 }());
 
 
+
 },{"./catalog-services":3,"./image-services":5,"./remote-service":6,"./xhr":10}],2:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 /*globals $, JS9 */
@@ -238,7 +239,7 @@ function CatalogService(params) {
 
 
 	var pos_func = function(im, x, y) {
-	    var coords = JS9.WCS2Pix(im, x, y);
+	    var coords = JS9.WCSToPix(x, y, {display: im});
 
 	    return { x: coords.x, y: coords.y };
 	};
@@ -290,19 +291,21 @@ function CatalogService(params) {
 
 	var reply = xhr({ url: url, title: "Catalog", status: messages, CORS: values.CORS }, function(e) {
 	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
-	    var im    = JS9.GetImage(values.display);
+	    var im    = JS9.GetImage({display: values.display});
 
-	    JS9.NewShapeLayer(im, values.name, JS9.Catalogs.opts);
-	    JS9.RemoveShapes( im, values.name);
+	    JS9.NewShapeLayer(values.name, JS9.Catalogs.opts, {display: im});
+	    JS9.RemoveShapes(values.name, {display: im});
 
 	    var shapes = catalog.table2cat(im, table);
 
-	    JS9.AddShapes(im, values.name, shapes, {color: "yellow"});
+	    JS9.AddShapes(values.name, shapes, {color: "yellow"}, {display: im});
 	});
     };
 }
 
 module.exports = CatalogService;
+
+
 
 },{"./remote-service":6,"./starbase":7,"./strtod":8,"./template":9,"./xhr":10}],3:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */

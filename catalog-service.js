@@ -29,7 +29,7 @@ function CatalogService(params) {
 
 
 	var pos_func = function(im, x, y) {
-	    var coords = JS9.WCS2Pix(im, x, y);
+	    var coords = JS9.WCSToPix(x, y, {display: im});
 
 	    return { x: coords.x, y: coords.y };
 	};
@@ -81,16 +81,18 @@ function CatalogService(params) {
 
 	var reply = xhr({ url: url, title: "Catalog", status: messages, CORS: values.CORS }, function(e) {
 	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
-	    var im    = JS9.GetImage(values.display);
+	    var im    = JS9.GetImage({display: values.display});
 
-	    JS9.NewShapeLayer(im, values.name, JS9.Catalogs.opts);
-	    JS9.RemoveShapes( im, values.name);
+	    JS9.NewShapeLayer(values.name, JS9.Catalogs.opts, {display: im});
+	    JS9.RemoveShapes(values.name, {display: im});
 
 	    var shapes = catalog.table2cat(im, table);
 
-	    JS9.AddShapes(im, values.name, shapes, {color: "yellow"});
+	    JS9.AddShapes(values.name, shapes, {color: "yellow"}, {display: im});
 	});
     };
 }
 
 module.exports = CatalogService;
+
+

@@ -83,23 +83,23 @@
 		}
 	    });
 	} else {
-	    var im = JS9.GetImage(display);
+	    var im = JS9.GetImage({display: display});
 
 	    var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
-	    var c0     = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
+	    var c0     = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, im.raw.header.NAXIS2/2+1, {display: im});
 	    //var coords = c0.str.split(" ");
 
 	    form.ra.value  = coords[0] || "";
 	    form.dec.value = coords[1] || "";
 
-	    var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
-	    var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
+	    var c1 = JS9.PixToWCS(1,                      im.raw.header.NAXIS2/2+1, {display: im});
+	    var c2 = JS9.PixToWCS(im.raw.header.NAXIS1+1, im.raw.header.NAXIS2/2+1, {display: im});
 
 	    form.width.value = Math.floor(Math.abs((c1.ra-c2.ra)*60)*Math.cos(c0.dec/57.2958)*10)/10;
 
-	    c1 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2,                    0);
-	    c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2);
+	    c1 = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, 1, {display: im});
+	    c2 = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, im.raw.header.NAXIS2+1, {display: im});
 
 	    form.height.value = Math.floor(Math.abs((c1.dec-c2.dec)*60)*10)/10;
 	}
@@ -168,8 +168,8 @@
 
 	var display = this.display;
 
-	$(div).find(".service-go").click(function () { serviceGo(div, display); });
-	$(div).find(".get-ra-dec").click(function () { getRADec (div, display); });
+	$(div).find(".service-go").on("mouseup", function () { serviceGo(div, display); });
+	$(div).find(".get-ra-dec").on("mouseup", function () { getRADec (div, display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
@@ -203,4 +203,5 @@
     });
 
 }());
+
 

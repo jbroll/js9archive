@@ -25,7 +25,10 @@ lint :
 
 install:
 	@mkdir -p $(JS9JS)
-	cp -p js9archive.html  $(JS9)/.
-	cp -p archive.js       $(JS9JS)/.
-	cp -p archive.html     $(JS9JS)/.
+	cp -p js9archive.html	$(JS9)/.
+	cp -p archive.js	$(JS9JS)/.
+	cp -p archive.html	$(JS9JS)/.
+	cp -p README		$(JS9JS)/.
 
+distclean:
+	rm archive.js
