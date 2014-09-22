@@ -91,8 +91,8 @@
 	    var c0     = JS9.Pix2WCS(im, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2);
 	    //var coords = c0.str.split(" ");
 
-	    form.ra.value  = coords[0];
-	    form.dec.value = coords[1];
+	    form.ra.value  = coords[0] || "";
+	    form.dec.value = coords[1] || "";
 
 	    var c1 = JS9.Pix2WCS(im, 0,                    im.raw.header.NAXIS2/2);
 	    var c2 = JS9.Pix2WCS(im, im.raw.header.NAXIS1, im.raw.header.NAXIS2/2);
