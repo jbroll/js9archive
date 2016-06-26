@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 /*globals $, JS9, Option */ 
 
@@ -86,7 +86,7 @@
 	} else {
 	    var im = JS9.GetImage({display: display});
 
-	    var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
+	    var coords = JS9.pix2wcs(im.raw.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
 	    var c0     = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, im.raw.header.NAXIS2/2+1, {display: im});
 	    //var coords = c0.str.split(" ");
@@ -228,7 +228,7 @@ function CatalogService(params) {
     this.params = params;
 
     this.table2cat = function(im, table) {
-	var i;
+	var i, j;
 	var shape = this.params.shape;
 
 	var xcol = table[this.params.xcol];
@@ -241,7 +241,11 @@ function CatalogService(params) {
 	var pos_func = function(im, x, y) {
 	    var coords = JS9.WCSToPix(x, y, {display: im});
 
-	    return { x: coords.x, y: coords.y };
+	    if( coords ){
+		return { x: coords.x, y: coords.y };
+	    } else {
+		return null;
+	    }
 	};
 	var sizefunc;
 
@@ -264,8 +268,11 @@ function CatalogService(params) {
 	}
 
 	var regs = [], pos, siz, reg;
-	for ( i = 0; i < table.data.length; i++ ) {
+	for ( i = 0, j = 0; i < table.data.length; i++ ) {
 	    pos = pos_func(im, table.data[i][xcol]*15, table.data[i][ycol]);
+	    if( !pos ){
+		continue;
+	    }
 	    siz = sizefunc(im, table.data[i][wcol], table.data[i][hcol]);
 
 	    reg = {   id: i.toString(), shape: shape
@@ -274,7 +281,7 @@ function CatalogService(params) {
 			, angle: 0
 		};
 
-	    regs[i] = reg;
+	    regs[j++] = reg;
 	}
 
 	return regs;
@@ -375,7 +382,7 @@ var CatalogService = require("./catalog-service");
 
 },{"./catalog-service":2,"./strtod":8}],4:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
-/*globals xhr, Blob, Fitsy */
+/*globals xhr, Blob, JS9 */
 
 "use strict";
 
@@ -405,11 +412,7 @@ function ImageService(params) {
 		var blob      = new Blob([xhr.response]);
 		blob.name = values.name;
 
-		if ( Fitsy.handleFITSFile === undefined ) {
-		    Fitsy.handleFITSFiles(undefined, [blob], { display: display });
-		} else {
-		    Fitsy.handleFITSFile(blob, { display: display });
-		}
+		JS9.fits.handleFITSFile(blob, { display: display });
 	    } else {
 	    	params.handler(e, xhr, params, values);
 	    }
@@ -432,10 +435,11 @@ var ImageService = require("./image-service");
 	    var name;
 
 	    if ( values.name !== "" ) {
-		name = values.name + " " + values.source;
+		name = values.name + "_" + values.source;
 	    } else {
-	        name = values.source + " " + values.r + plus + values.d;
+	        name = values.source + "_" + values.r + plus + values.d;
 	    }
+	    name += ".fits";
 
 	    return name;
 	};
@@ -550,7 +554,7 @@ var ImageService = require("./image-service");
 //	    , url: "http://skys.gsfc.nasa.gov/cgi-bin/images?VCOORD={ra},{dec}&SURVEY={s}&SFACTR={size}&RETURN=FITS"
 //	    , calc: function(values) {
 //		    values.size = Math.floor((values.w+values.h)/2)
-//		    values.name = values.name + " " + values.source;
+//		    values.name = values.name + "_" + values.source;
 //		}
 //	})
 
@@ -820,4 +824,5 @@ module.exports = template;
 module.exports = xhr;
 
 
-},{}]},{},[1])
+},{}]},{},[1]);
+

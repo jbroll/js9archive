@@ -1,5 +1,5 @@
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
-/*globals xhr, Blob, Fitsy */
+/*globals xhr, Blob, JS9 */
 
 "use strict";
 
@@ -29,11 +29,7 @@ function ImageService(params) {
 		var blob      = new Blob([xhr.response]);
 		blob.name = values.name;
 
-		if ( Fitsy.handleFITSFile === undefined ) {
-		    Fitsy.handleFITSFiles(undefined, [blob], { display: display });
-		} else {
-		    Fitsy.handleFITSFile(blob, { display: display });
-		}
+		JS9.fits.handleFITSFile(blob, { display: display });
 	    } else {
 	    	params.handler(e, xhr, params, values);
 	    }
