@@ -33,13 +33,13 @@ var ImageService = require("./image-service");
 	});
 
 	var stsDSS = new ImageService({
-	      text: "DSS@Stsci"
+	      text: "DSS@STScI"
 	    , value: "stsDSS"
-	    , surveys: [   { value: "poss2ukstu_ir",	text: "StSci DSS2 IR"	}
-			 , { value: "poss2ukstu_red",	text: "StSci DSS2 Red"	}
-			 , { value: "poss2ukstu_blue",	text: "StSci DSS2 Blue"	}
-			 , { value: "poss1_red", 	text: "StSci DSS1 Red"	}
-			 , { value: "poss1_blue",	text: "StSci DSS1 Blue"	}
+	    , surveys: [   { value: "poss2ukstu_ir",	text: "STScI DSS2 IR"	}
+			 , { value: "poss2ukstu_red",	text: "STScI DSS2 Red"	}
+			 , { value: "poss2ukstu_blue",	text: "STScI DSS2 Blue"	}
+			 , { value: "poss1_red", 	text: "STScI DSS1 Red"	}
+			 , { value: "poss1_blue",	text: "STScI DSS1 Blue"	}
 			]
 	    , url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
 	    , calc: function(values) {
@@ -85,29 +85,29 @@ var ImageService = require("./image-service");
 		}
 	});
 
-	var dasch  = new ImageService({
-	      text: "DASCH"
-	    , value: "dasch"
-	    , surveys: [   { value: "plates", 		text: "Plates"		} ]
-
-	    , url: "http://dasch.rc.fas.harvard.edu/showtext.php?listflag=0&dateflag=dateform=j%20&coordflag=&radius=200&daterange=&seriesflag=&plateNumberflag=&classflag=&typeflag=%20-T%20wcsfit%20&pessimisticflag=&bflag=-j&nstars=5000&locstring=12:00:00%2030:00:00%20J2000"
-
-	    , calc: function(values) {
-		    values.radius = Math.min(Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60), 600);
-		    values.name   = imageName(values);
-	    }
-
-	    , picker: "<input type=button value='pick' class='picker'>"
-	    , controls: "<tr>><td>Series</td>   <td><input type=text size=10 name=series></td>		\n\
-	    		      <td>Plate No</td> <td><input type=text size=10 name=plate></td>           \n\
-	    		      <td>Class</td>    <td><input type=text size=10 name=class></td></tr>      \n\
-	    		  <tr><td>Date From</td><td><input type=text size=10 name=datefr></td>          \n\
-	    		      <td>Date To</td>  <td><input type=text size=10 name=dateto></td></tr>      \n\
-			 "
-	    , handler: function (e, xhr, params, values) {
-	    	
-	    }
-	});
+//	var dasch  = new ImageService({
+//	      text: "DASCH"
+//	    , value: "dasch"
+//	    , surveys: [   { value: "plates", 		text: "Plates"		} ]
+//
+//	    , url: "http://dasch.rc.fas.harvard.edu/showtext.php?listflag=0&dateflag=dateform=j%20&coordflag=&radius=200&daterange=&seriesflag=&plateNumberflag=&classflag=&typeflag=%20-T%20wcsfit%20&pessimisticflag=&bflag=-j&nstars=5000&locstring=12:00:00%2030:00:00%20J2000"
+//
+//	    , calc: function(values) {
+//		    values.radius = Math.min(Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60), 600);
+//		    values.name   = imageName(values);
+//	    }
+//
+//	    , picker: "<input type=button value='pick' class='picker'>"
+//	    , controls: "<tr>><td>Series</td>   <td><input type=text size=10 name=series></td>		\n\
+//	    		      <td>Plate No</td> <td><input type=text size=10 name=plate></td>           \n\
+//	    		      <td>Class</td>    <td><input type=text size=10 name=class></td></tr>      \n\
+//	    		  <tr><td>Date From</td><td><input type=text size=10 name=datefr></td>          \n\
+//	    		      <td>Date To</td>  <td><input type=text size=10 name=dateto></td></tr>      \n\
+//			 "
+//	    , handler: function (e, xhr, params, values) {
+//
+//	    }
+//	});
 
 //	var cds = new ImageService({
 //	      text: "CDS Aladin Server"
