@@ -10,7 +10,7 @@ var ImageService = require("./image-service");
 	    var name;
 
 	    if ( values.name !== "" ) {
-		name = values.name + "_" + values.source;
+		name = values.source + "_" + values.name;
 	    } else {
 	        name = values.source + "_" + values.r + plus + values.d;
 	    }
