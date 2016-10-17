@@ -58,7 +58,7 @@ var CatalogService = require("./catalog-service");
 		    values.name = values.source + "@" + this.text;
 		}
 
-	    , shape: "circle"
+	    , shape: "box"
 	    , xcol:  "_RAJ2000", ycol: "_DEJ2000"
 	
 	});
