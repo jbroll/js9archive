@@ -88,10 +88,14 @@ function CatalogService(params) {
 	var catalog = this;
 
 	var reply = xhr({ url: url, title: "Catalog", status: messages, CORS: values.CORS }, function(e) {
-	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units });
+	    var table = new Starbase(reply.responseText, { type: { default: strtod }, units: values.units, skip: "#\n" });
 	    var im    = JS9.GetImage({display: values.display});
 	    var gopts = $.extend(true, {}, JS9.Catalogs.opts, {tooltip: "$xreg.data.ra $xreg.data.dec"});
 	    var opts = {color: "yellow"};
+
+	    if( !table.data.length ){
+		JS9.error("no catalog objects found");
+	    }
 
 	    JS9.NewShapeLayer(values.name, gopts, {display: im});
 	    JS9.RemoveShapes(values.name, {display: im});
