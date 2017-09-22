@@ -7,7 +7,7 @@
 	var status = params.status;
 	var title = "";
 
-	var corsurl = JS9.globalOpts.corsProxy || "http://js9.si.edu/cgi-bin/CORS-proxy.cgi";
+	var corsurl = JS9.globalOpts.corsProxy || "https://js9.si.edu/cgi-bin/CORS-proxy.cgi";
 
 	if ( params.CORS ) {
 	    params.url = params.url.replace(/\?/g, "@");
