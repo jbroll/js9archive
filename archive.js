@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /*jslint white: true, vars: true, plusplus: true, nomen: true, unparam: true */
 /*globals $, JS9, Option */ 
 
@@ -136,10 +136,10 @@
 	var div = this.div;
 
 	div.innerHTML = '<form class="JS9Archive-form">\
-	    <select class="service-menu"></select>\
-	    <select class="server-menu"></select>\
-	    <select class="source-menu"></select>\
-	    <span style="float: right;"><input type=button value="Set RA/Dec" class="get-ra-dec">&nbsp;&nbsp;<input type=button value="Retrieve Data" class="service-go"></span>	\
+	    <select class="service-menu JS9Select"></select>\
+	    <select class="server-menu JS9Select"></select>\
+	    <select class="source-menu JS9Select"></select>\
+	    <span style="float: right;"><input type=button value="Set RA/Dec" class="get-ra-dec JS9Button2">&nbsp;&nbsp;<input type=button value="Retrieve Data" class="service-go JS9Button2"></span>	\
 	    <p>											\
 												\
 	    <table width="98%">									\
@@ -147,17 +147,17 @@
 		<td></td>									\
 		<td></td>									\
 		<td>&nbsp;&nbsp;</td>								\
-		<td> <input type=checkbox name=gzip> Use Compression</td>			\
+		<td> <input type=checkbox name=gzip> compression</td>			\
 	    </tr>										\
 	    <tr><td> RA:  	</td><td>	<input type=text name=ra	size=12> </td>	\
 		<td> Dec: 	</td><td>	<input type=text name=dec	size=12> </td>	\
 		<td></td>									\
-		<td> <input type=checkbox name=CORS checked> Use CORS Proxy</td>		\
+		<td> <input type=checkbox name=CORS checked> CORS proxy</td>		\
 	    <tr><td> Width: </td><td>	<input type=text name=width	size=12 value=15> </td>	\
 		<td> Height: </td><td>	<input type=text name=height	size=12 value=15> </td>	\
 	    </tr>										\
 	    </table>										\
-	    <div class=controls></div>								\
+	    <div class="js9archive-controls"></div>								\
 	    <p><span class=status></span>							\
 	    </form>';
 
@@ -199,7 +199,7 @@
 
 	    menuItem: "Archives & Catalogs",
 	    winTitle: "Archives & Catalogs",
-	    winDims: [625, 175],
+	    winDims: [610, 175],
 
 	    help:	"archive/archive.html"
     });
@@ -539,7 +539,7 @@ var ImageService = require("./image-service");
 //		    values.name   = imageName(values);
 //	    }
 //
-//	    , picker: "<input type=button value='pick' class='picker'>"
+//	    , picker: "<input type=button value='pick' class='picker JS9Button2'>"
 //	    , controls: "<tr>><td>Series</td>   <td><input type=text size=10 name=series></td>		\n\
 //	    		      <td>Plate No</td> <td><input type=text size=10 name=plate></td>           \n\
 //	    		      <td>Class</td>    <td><input type=text size=10 name=class></td></tr>      \n\
@@ -827,7 +827,7 @@ module.exports = template;
 	}
 
 	if( JS9.DEBUG > 1 ){
-	    console.log("archive/catalog url: %s", params.url);
+	    JS9.log("archive/catalog url: %s", params.url);
 	}
 
 	var _xhr = new XMLHttpRequest();

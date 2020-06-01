@@ -97,7 +97,7 @@ var ImageService = require("./image-service");
 //		    values.name   = imageName(values);
 //	    }
 //
-//	    , picker: "<input type=button value='pick' class='picker'>"
+//	    , picker: "<input type=button value='pick' class='picker JS9Button2'>"
 //	    , controls: "<tr>><td>Series</td>   <td><input type=text size=10 name=series></td>		\n\
 //	    		      <td>Plate No</td> <td><input type=text size=10 name=plate></td>           \n\
 //	    		      <td>Class</td>    <td><input type=text size=10 name=class></td></tr>      \n\

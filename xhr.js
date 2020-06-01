@@ -20,7 +20,7 @@
 	}
 
 	if( JS9.DEBUG > 1 ){
-	    console.log("archive/catalog url: %s", params.url);
+	    JS9.log("archive/catalog url: %s", params.url);
 	}
 
 	var _xhr = new XMLHttpRequest();
