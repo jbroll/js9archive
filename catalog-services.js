@@ -13,7 +13,7 @@ var CatalogService = require("./catalog-service");
 	    , surveys: [   { value: "tmc",	text: "Two Mass Catalog"	}
 			 , { value: "gsc2",	text: "Guide Star Catalog 2"		}
 			]
-	    , url: "http://www.cfa.harvard.edu/catalog/scat?catalog={s}&ra={r}&dec={d}&width={w}&height={h}&system={e}&compress={c}"
+	    , url: "https://www.cfa.harvard.edu/catalog/scat?catalog={s}&ra={r}&dec={d}&width={w}&height={h}&system={e}&compress={c}"
 	    , calc: function(values) {
 		    if ( values.c ) {
 			values.c = "gzip";
@@ -46,7 +46,7 @@ var CatalogService = require("./catalog-service");
 			 , { value: "USNO-B1",		text: "USNO-B1"				}
 			 , { value: "WISE",		text: "WISE"				}
 			]
-	    , url: "http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source={s}&-out.add=_RAJ,_DEJ&-c={r}{d}&-c.bm={w}x{h}&-oc.form=s&-out.meta=h"
+	    , url: "https://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source={s}&-out.add=_RAJ,_DEJ&-c={r}{d}&-c.bm={w}x{h}&-oc.form=s&-out.meta=h"
 	    , calc: function(values) {
 		    if ( values.c ) {
 			values.c = "gzip";
