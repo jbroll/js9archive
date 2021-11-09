@@ -7,6 +7,8 @@
 	var status = params.status;
 	var title = "";
 
+	var corsurl = JS9.globalOpts.corsProxy || "https://js9.si.edu/cgi-bin/CORS-proxy.cgi";
+
 	if ( params.CORS ) {
 	    params.url = params.url.replace(/\?/g, "@");
 	    params.url = params.url.replace(/&/g, "!");
@@ -14,7 +16,11 @@
 
 	    params.url = encodeURI(params.url);
 
-	    params.url="http://hopper.si.edu/http/CORS-proxy?Q=" + params.url;
+	    params.url= corsurl + "?Q=" + params.url;
+	}
+
+	if( JS9.DEBUG > 1 ){
+	    JS9.log("archive/catalog url: %s", params.url);
 	}
 
 	var _xhr = new XMLHttpRequest();
@@ -38,7 +44,6 @@
 	    if ( this.readyState === 4 ) {
 		if ( this.status === 200 || this.status === 0 ) {
 		    if ( status !== undefined ) { status(""); }
-
 		    func(e, this);
 		}
 	    }

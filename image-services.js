@@ -10,10 +10,11 @@ var ImageService = require("./image-service");
 	    var name;
 
 	    if ( values.name !== "" ) {
-		name = values.name + " " + values.source;
+		name = values.source + "_" + values.name;
 	    } else {
-	        name = values.source + " " + values.r + plus + values.d;
+	        name = values.source + "_" + values.r + plus + values.d;
 	    }
+	    name = name.replace(/\s+/g,"_") + ".fits";
 
 	    return name;
 	};
@@ -22,7 +23,7 @@ var ImageService = require("./image-service");
 	      text: "DSS1@SAO"
 	    , value: "saoDSS"
 	    , surveys: [ { value: "DSS1", text: "DSS1" } ]
-	    , url: "http://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
+	    , url: "https://www.cfa.harvard.edu/archive/dss?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}"
 	    , calc: function(values) {
 		    if ( values.c ) {
 			values.c = "gzip";
@@ -32,15 +33,15 @@ var ImageService = require("./image-service");
 	});
 
 	var stsDSS = new ImageService({
-	      text: "DSS@Stsci"
+	      text: "DSS@STScI"
 	    , value: "stsDSS"
-	    , surveys: [   { value: "poss2ukstu_ir",	text: "StSci DSS2 IR"	}
-			 , { value: "poss2ukstu_red",	text: "StSci DSS2 Red"	}
-			 , { value: "poss2ukstu_blue",	text: "StSci DSS2 Blue"	}
-			 , { value: "poss1_red", 	text: "StSci DSS1 Red"	}
-			 , { value: "poss1_blue",	text: "StSci DSS1 Blue"	}
+	    , surveys: [   { value: "poss2ukstu_ir",	text: "STScI DSS2 IR"	}
+			 , { value: "poss2ukstu_red",	text: "STScI DSS2 Red"	}
+			 , { value: "poss2ukstu_blue",	text: "STScI DSS2 Blue"	}
+			 , { value: "poss1_red", 	text: "STScI DSS1 Red"	}
+			 , { value: "poss1_blue",	text: "STScI DSS1 Blue"	}
 			]
-	    , url: "http://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
+	    , url: "https://stdatu.stsci.edu/cgi-bin/dss_search?r={r}&d={d}&w={w}&h={h}&e={e}&c={c}&v={s}&f=fits"
 	    , calc: function(values) {
 		    if ( values.c ) {
 			values.c = "gz";
@@ -59,7 +60,7 @@ var ImageService = require("./image-service");
 			 , { value: "DSS2-blue",	text: "ESO DSS2 Blue"	}
 			 , { value: "DSS1",		text: "ESO DSS1"	}
 			]
-	    , url: "http://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
+	    , url: "https://archive.eso.org/dss/dss?ra={r}&dec={d}&equinox=J2000&x={w}&y={h}&mime-type={c}&Sky-Survey={s}"
 	    , calc: function(values) {
 		    if ( values.c ) {
 			values.c = "display/gz-fits";
@@ -77,36 +78,36 @@ var ImageService = require("./image-service");
 			 , { value: "h", 		text: "IPAC 2Mass H"		}
 			 , { value: "k", 		text: "IPAC 2Mass K"		}
 			]
-	    , url: "http://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
+	    , url: "https://irsa.ipac.caltech.edu/cgi-bin/Oasis/2MASSImg/nph-2massimg?objstr={r},{d}&size={radius}&band={s}"
 	    , calc: function(values) {
 		    values.radius = Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60);
 		    values.name   = imageName(values);
 		}
 	});
 
-	var dasch  = new ImageService({
-	      text: "DASCH"
-	    , value: "dasch"
-	    , surveys: [   { value: "plates", 		text: "Plates"		} ]
-
-	    , url: "http://dasch.rc.fas.harvard.edu/showtext.php?listflag=0&dateflag=dateform=j%20&coordflag=&radius=200&daterange=&seriesflag=&plateNumberflag=&classflag=&typeflag=%20-T%20wcsfit%20&pessimisticflag=&bflag=-j&nstars=5000&locstring=12:00:00%2030:00:00%20J2000"
-
-	    , calc: function(values) {
-		    values.radius = Math.min(Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60), 600);
-		    values.name   = imageName(values);
-	    }
-
-	    , picker: "<input type=button value='pick' class='picker'>"
-	    , controls: "<tr>><td>Series</td>   <td><input type=text size=10 name=series></td>		\n\
-	    		      <td>Plate No</td> <td><input type=text size=10 name=plate></td>           \n\
-	    		      <td>Class</td>    <td><input type=text size=10 name=class></td></tr>      \n\
-	    		  <tr><td>Date From</td><td><input type=text size=10 name=datefr></td>          \n\
-	    		      <td>Date To</td>  <td><input type=text size=10 name=dateto></td></tr>      \n\
-			 "
-	    , handler: function (e, xhr, params, values) {
-	    	
-	    }
-	});
+//	var dasch  = new ImageService({
+//	      text: "DASCH"
+//	    , value: "dasch"
+//	    , surveys: [   { value: "plates", 		text: "Plates"		} ]
+//
+//	    , url: "http://dasch.rc.fas.harvard.edu/showtext.php?listflag=0&dateflag=dateform=j%20&coordflag=&radius=200&daterange=&seriesflag=&plateNumberflag=&classflag=&typeflag=%20-T%20wcsfit%20&pessimisticflag=&bflag=-j&nstars=5000&locstring=12:00:00%2030:00:00%20J2000"
+//
+//	    , calc: function(values) {
+//		    values.radius = Math.min(Math.floor(Math.sqrt(values.w*values.w+values.h*values.h)*60), 600);
+//		    values.name   = imageName(values);
+//	    }
+//
+//	    , picker: "<input type=button value='pick' class='picker JS9Button2'>"
+//	    , controls: "<tr>><td>Series</td>   <td><input type=text size=10 name=series></td>		\n\
+//	    		      <td>Plate No</td> <td><input type=text size=10 name=plate></td>           \n\
+//	    		      <td>Class</td>    <td><input type=text size=10 name=class></td></tr>      \n\
+//	    		  <tr><td>Date From</td><td><input type=text size=10 name=datefr></td>          \n\
+//	    		      <td>Date To</td>  <td><input type=text size=10 name=dateto></td></tr>      \n\
+//			 "
+//	    , handler: function (e, xhr, params, values) {
+//
+//	    }
+//	});
 
 //	var cds = new ImageService({
 //	      text: "CDS Aladin Server"
@@ -128,7 +129,7 @@ var ImageService = require("./image-service");
 //	    , url: "http://skys.gsfc.nasa.gov/cgi-bin/images?VCOORD={ra},{dec}&SURVEY={s}&SFACTR={size}&RETURN=FITS"
 //	    , calc: function(values) {
 //		    values.size = Math.floor((values.w+values.h)/2)
-//		    values.name = values.name + " " + values.source;
+//		    values.name = values.name + "_" + values.source;
 //		}
 //	})
 

@@ -63,6 +63,8 @@
     }
 
     function getRADec(div, display) {
+	var owcssys, txeq;
+
 	function status(text) {
 	    $(div).find(".status").html(text);
 	}
@@ -70,7 +72,8 @@
 	var form = $(div).find(".JS9Archive-form")[0];
 
 	if ( form.object.value !== "" ) {
-	    var simbad = encodeURI('http://hopper.si.edu/http/simbad?' + form.object.value);
+	    var simurl = JS9.globalOpts.simbadProxy || "https://js9.si.edu/cgi-bin/simbad-proxy.cgi";
+	    var simbad = encodeURI(simurl + '?' + form.object.value);
 
 	    xhr({ url: simbad, title: "Name", status: status }, function(e, xhr) {
 		var coords = xhr.responseText.trim().split(" ");
@@ -85,7 +88,14 @@
 	} else {
 	    var im = JS9.GetImage({display: display});
 
-	    var coords = JS9.pix2wcs(im.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
+	    owcssys = im.getWCSSys();
+	    if( owcssys === "image" || owcssys === "physical" ){
+		txeq = JS9.globalOpts.xeqPlugins;
+		JS9.globalOpts.xeqPlugins = false;
+		im.setWCSSys("native", false);
+	    }
+
+	    var coords = JS9.pix2wcs(im.raw.wcs, im.raw.header.NAXIS1/2, im.raw.header.NAXIS2/2).split(/ +/);
 
 	    var c0     = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, im.raw.header.NAXIS2/2+1, {display: im});
 	    //var coords = c0.str.split(" ");
@@ -102,6 +112,11 @@
 	    c2 = JS9.PixToWCS(im.raw.header.NAXIS1/2+1, im.raw.header.NAXIS2+1, {display: im});
 
 	    form.height.value = Math.floor(Math.abs((c1.dec-c2.dec)*60)*10)/10;
+
+	    if( owcssys === "image" || owcssys === "physical" ){
+		im.setWCSSys(owcssys, false);
+		JS9.globalOpts.xeqPlugins = txeq;
+	    }
 	}
     }
 
@@ -130,34 +145,49 @@
     }
 
     function archInit() {
-
 	var div = this.div;
+	var win = this.winHandle;
+	var disclose = win ? "" : 'style="display:none;"';
 
-	div.innerHTML = '<form class="JS9Archive-form">\
-	    <select class="service-menu"></select>\
-	    <select class="server-menu"></select>\
-	    <select class="source-menu"></select>\
-	    <span style="float: right;"><input type=button value="Set RA/Dec" class="get-ra-dec"><input type=button value="Retrieve Data" class="service-go"></span>	\
-	    <p>											\
-												\
-	    <table width="98%">									\
-	    <tr><td> Object: </td> <td> <input type=text name=object size=10> </td>		\
-		<td></td>									\
-		<td></td>									\
-		<td>&nbsp;&nbsp;</td>								\
-		<td> <input type=checkbox name=gzip> Use Compression</td>			\
-	    </tr>										\
-	    <tr><td> RA:  	</td><td>	<input type=text name=ra	size=10> </td>	\
-		<td> Dec: 	</td><td>	<input type=text name=dec	size=10> </td>	\
-		<td></td>									\
-		<td> <input type=checkbox name=CORS checked> Use CORS Proxy</td>		\
-	    <tr><td> Width: </td><td>	<input type=text name=width	size=10 value=15> </td>	\
-		<td> Height: </td><td>	<input type=text name=height	size=10 value=15> </td>	\
-	    </tr>										\
-	    </table>										\
-	    <div class=controls></div>								\
-	    <p><span class=status></span>							\
-	    </form>';
+	div.innerHTML = `<form class="JS9Archive-form">
+            <p>
+	    <select class="service-menu JS9Select"></select>
+	    <select class="server-menu JS9Select"></select>
+	    <select class="source-menu JS9Select"></select>
+	    <p>
+	    <table width="98%">
+	    <tr><td>RA:  	</td><td>	<input type=text name=ra	size=12> </td>
+		<td>Dec: 	</td><td>	<input type=text name=dec	size=12> </td>
+		<td><input type=button value="Set RA/Dec" class="get-ra-dec JS9Button2"> </td>
+	    <tr><td>Width: </td><td>	<input type=text name=width	size=12 value=15> </td>
+		<td>Height: </td><td>	<input type=text name=height	size=12 value=15> </td>
+                <td>
+                    <input type=checkbox name=CORS checked>CORS
+		    <input type=checkbox name=gzip> compress
+                </td>
+	    </tr>
+	    <tr><td>Object: </td> <td> <input type=text name=object size=12> </td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+            </tr>
+            <tr>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
+            </tr>
+            <tr>
+		<td colspan="4"><span class=status></td>
+	        <td>
+                    <input type=button value="Cancel" class="service-cancel JS9Button2" ${disclose}>
+                    &nbsp;
+                    <input type=button value="Get Data" class="service-go JS9RunButton">
+                </td>
+            </tr>
+	    </table>
+	    </form>`;
 
 	var mtyp = $(div).find(".service-menu");
 	var msrv = $(div).find(".server-menu");
@@ -168,8 +198,9 @@
 
 	var display = this.display;
 
-	$(div).find(".service-go").on("mouseup", function () { serviceGo(div, display); });
-	$(div).find(".get-ra-dec").on("mouseup", function () { getRADec (div, display); });
+	$(div).find(".service-cancel").on("mouseup", function() { if( win ){ win.close(); } });
+	$(div).find(".service-go").on("mouseup", function() { serviceGo(div, display); });
+	$(div).find(".get-ra-dec").on("mouseup", function() { getRADec (div, display); });
 	
 	var imgmenu = [];
 	$.each(Remote.Services, function(i, service) {
@@ -197,7 +228,7 @@
 
 	    menuItem: "Archives & Catalogs",
 	    winTitle: "Archives & Catalogs",
-	    winDims: [625, 175],
+	    winDims: [610, 210],
 
 	    help:	"archive/archive.html"
     });
